@@ -14,6 +14,7 @@ const port = 3000;
 const loginRoute = require('../routes/login.Route');
 const usersRoute = require('../routes/users.Route');
 const pollsRoute = require('../routes/polls.Route');
+const poll_answerRoute = require('../routes/poll_answer.Route');
 const poll_attendanceRoute = require('../routes/poll_attendance.Route');
 const commentsRoute = require('../routes/comments.Route');
 
@@ -48,7 +49,8 @@ function initialize() {
   app.use('/auth', loginRoute);
   app.use('/user', usersRoute);
   app.use('/poll', pollsRoute);
-  app.use('/pollAt', poll_attendanceRoute);
+  app.use('/poll/:id', poll_answerRoute);
+  app.use('/poll/:id/result', poll_attendanceRoute);
   app.use('/poll/:id', commentsRoute);
 
 

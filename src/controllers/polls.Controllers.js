@@ -53,7 +53,7 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
 
     //getAllpolls
     exports.getPolls = asyncHandler(async (req, res, next) => {
-          const polls = await Polls.findAll({
+          const polls = await polls.findAll({
             where: {
               userid: userid, 
             },
