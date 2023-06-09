@@ -1,42 +1,47 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class comments extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  }
-  comments.init({
-    id:{
-      type:DataTypes.INTEGER,
-      primaryKey:true
+const DataTypes = require("sequelize");
+const db = require("../../services/database");
+
+const Comments = db.define(
+  "comments",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    pollid: DataTypes.INTEGER,
+    commentid: {
+      type: DataTypes.INTEGER,
+    },
+
+    pollid: {
+      type: DataTypes.INTEGER,
+    },
+
     userid: {
-      type:DataTypes.INTEGER,
-      allowNull:true},
-    comment: DataTypes.STRING,
-    posteddate: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'comments',
-  });
-  comments.associate = models =>{
-    comments.belongsTo(models.users,{
-      foreignKey:'userid',
-      onDelete:'SET NULL'
-    });
-    comments.belongsTo(models.polls,{
-      foreignKey:'pollid',
-      onDelete:'CASCADE'
-    })
+      type: DataTypes.INTEGER,
+    },
+    comment: {
+      type: DataTypes.STRING,
+    },
+    posteddate: {
+      type: DataTypes.DATE,
+      get(){
+        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
+      }
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get(){
+        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
+  },
+  {
+    freezeTableName: true,
   }
-  return comments;
-};
+);
+
+module.exports = Comments;

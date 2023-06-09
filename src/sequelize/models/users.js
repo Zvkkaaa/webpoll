@@ -1,45 +1,46 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class users extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  }
-  users.init({
-    id:{
-      type:DataTypes.INTEGER,
-      primaryKey:true
+const DataTypes = require("sequelize");
+const db = require("../../services/database");
+
+const Users = db.define(
+  "users",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      unique: true,
     },
-    username: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    birthdate: DataTypes.DATE,
-    role: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'users',
-  });
-  users.associate = models =>{
-    users.hasMany(models.polls,{
-      onDelete:'SET NULL',
-      foreignKey:'userid'
-    }); 
-    users.hasMany(models.poll_attendance,{
-      onDelete:'CASCADE',
-      foreignKey:'userid'
-    });
-    users.hasMany(models.comments,{
-      onDelete:'SET NULL',
-      foreignKey:'userid'
-    });
-  };
-  return users;
-};
+    userid: {
+      type: DataTypes.INTEGER,
+    },
+
+    username: {
+      type: DataTypes.STRING,
+    },
+
+    email: {
+      type: DataTypes.STRING,
+    },
+    birthdate: {
+      type: DataTypes.DATE,
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: "User",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get(){
+        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
+
+module.exports = Users;

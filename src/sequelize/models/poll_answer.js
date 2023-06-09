@@ -1,27 +1,22 @@
 const DataTypes = require("sequelize");
 const db = require("../../services/database");
 
-const PollAttendance = db.define(
-  "poll_attendances",
+const PollAnswer = db.define(
+  "poll_answers",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    attendanceid: {
-      type: DataTypes.INTEGER,
-    },
-
-    pollid: {
-      type: DataTypes.INTEGER,
-    },
-
-    userid: {
-      type: DataTypes.INTEGER,
-    },
     answerid: {
       type: DataTypes.INTEGER,
+    },
+    pollid:{
+        type: DataTypes.INTEGER,
+    },
+    answername: {
+      type: DataTypes.STRING,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -38,4 +33,4 @@ const PollAttendance = db.define(
   }
 );
 
-module.exports = PollAttendance;
+module.exports = PollAnswer;

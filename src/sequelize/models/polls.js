@@ -1,53 +1,41 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class polls extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+const DataTypes = require("sequelize");
+const db = require("../../services/database");
 
-    }
-  }
-  polls.init({
-    id:{
-      type:DataTypes.INTEGER,
-      primaryKey:true
+const Polls = db.define(
+  "polls",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    userid:{
-      type:DataTypes.INTEGER,
-      allowNull:true
+    pollid: {
+      type: DataTypes.INTEGER,
     },
-    question: DataTypes.STRING,
-    startdate: DataTypes.DATE,
-    expiredate: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'polls',
-  });
-  polls.associate = models =>{
-    polls.belongsTo(models.users,{
-      foreignKey:'userid',
-      onDelete:'SET NULL'
-    });
-    polls.hasMany(models.poll_answers,{
-      onDelete:'CASCADE',
-      foreignKey:'pollid'
-    });
-    polls.hasMany(models.poll_attendance,{
-      onDelete:'CASCADE',
-      foreignKey:'pollid'
 
-    });
-    polls.hasMany(models.comments,{
-      onDelete:'CASCADE',
-      pollid:'pollid'
-    });
+    question: {
+      type: DataTypes.STRING,
+    },
+
+    startdate: {
+      type: DataTypes.DATE,
+    },
+    expiredate: {
+      type: DataTypes.DATE,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      get(){
+        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
+      }
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+    },
+  },
+  {
+    freezeTableName: true,
   }
-  return polls;
-};
+);
+
+module.exports = Polls;

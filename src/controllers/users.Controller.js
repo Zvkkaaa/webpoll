@@ -78,6 +78,7 @@ exports.createUsers = asyncHandler(async (req, res, next) => {
         });
       });
       res.status(200).json({
-      message: "List of users"
+      users,
+      message: "Хэрэглэгчийн жагсаалт"
       });
     });  
