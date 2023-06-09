@@ -1,8 +1,13 @@
+const router = require("express").Router();
 const { Login } = require("../controllers/login.Controller");
 const { protect} = require("../middleware/protect")
 
-const router = require("express").Router();
-//const router =require
-router.route("/login").post(Login);
+
+router.route("/login").get(Login);
 
 module.exports = router;
+// const express = require("express");
+// const router = express.Router();
+// const logCtrl = require("../controllers/login.Controller");
+
+// router.route("/login").post(logCtrl.Login);
