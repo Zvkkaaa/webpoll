@@ -82,3 +82,37 @@ exports.createUsers = asyncHandler(async (req, res, next) => {
       message: "Хэрэглэгчийн жагсаалт"
       });
     });  
+    exports.deleteUser = asyncHandler(async ( req,res,next)=>{
+      const id = req.params;
+      const user = await Users.findById(id);
+      if(user){
+        if(user.role +"" !==""+ "Admin"){
+          Users.splice(index,1);
+          user.remove();
+          res.status(200).json("User removed successfully!")  
+        }
+        else res.status(200).json("Can't remove admin!");
+      } else{
+        res.status(200).json("user doesn't exist");
+      }
+    });   
+    exports.updateUser = asyncHandler(async (req,res,next)=>{
+      const id = req.params;
+      const {email, username, password, birthdate,role} = req.body;
+      const user = await Users.findById(id);
+      if(user){
+        user.email = email ? email:undefined;
+        //comment.text = text ? text : undefined;
+        user.email= email ? email:undefined;
+        user.username=username ? username:undefined;
+        user.password=password ? password:undefined;
+        user.birthdate= birthdate ? birthdate:undefined;
+        user.role= role ? role:undefined;
+  
+        user.save();
+        res.status(200).json("User info edited");
+      }
+      else{
+        res.status(200).json("User doesn't exist");
+      }
+    }); 

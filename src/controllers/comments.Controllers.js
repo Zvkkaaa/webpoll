@@ -53,7 +53,7 @@ exports.createComment = asyncHandler(async(req,res,netx) =>{
     res.status(200).json(comments);
   });
 
-exports.editComments = asyncHandler(async(req,res,next)=>{
+exports.editComment = asyncHandler(async(req,res,next)=>{
   try {
     const { commentsid } = req.params;
     const user = req.user;
