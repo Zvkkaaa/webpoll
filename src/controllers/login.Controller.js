@@ -3,10 +3,12 @@ const jwt = require("jsonwebtoken");
 const { Op, QueryTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("../middleware/asyncHandler");
-const Users = require("../sequelize/models/users");
+const Users = require("../models/users");
 
 exports.Login = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
+
+    console.log(req.body)
   
     if (!email || !password) {
       res.status(400).json({
@@ -28,6 +30,7 @@ exports.Login = asyncHandler(async (req, res, next) => {
         ],
       },
     }).then((result) => {
+      console.log("******", result)
       if (result == null) {
         res.status(500).json({
           success: false,
@@ -79,6 +82,13 @@ exports.Login = asyncHandler(async (req, res, next) => {
             message: "Нэвтрэх нэр эсвэл нууц үг буруу байна",
           });
         }
+      });
+    }).catch((err) => {
+      // console.log(err)
+      // logger.error("Алдаа гарлаа: " + err);
+      return res.status(500).json({
+        success: false,
+        message: "Серверийн алдаа",
       });
     });
   });

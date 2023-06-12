@@ -3,7 +3,7 @@ const { Login } = require("../controllers/login.Controller");
 const { protect} = require("../middleware/protect")
 
 
-router.route("/login").get(Login);
+router.route("/login").post(Login);
 
 module.exports = router;
 // const express = require("express");

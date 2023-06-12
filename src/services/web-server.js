@@ -4,7 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const app = express();
-const port = 6000;
+const port = process.env.PORT;
 
 // // Set up view engine
 // app.set('view engine', 'ejs');
@@ -17,6 +17,13 @@ const pollsRoute = require('../routes/polls.Route');
 const poll_answerRoute = require('../routes/poll_answer.Route');
 const poll_attendanceRoute = require('../routes/poll_attendance.Route');
 const commentsRoute = require('../routes/comments.Route');
+
+//db table add 
+const Users = require('../models/users')
+const Poll = require('../models/polls')
+const Poll_Answer =require('../models/poll_answer')
+const Poll_Attendances = require('../models/poll_attendance')
+const Comments = require('../models/comments')
 
 // const scheduler = require("./scheduler"); // устгаж болохгүй!!!
 //uuganaaa
@@ -64,14 +71,19 @@ function initialize() {
   // app.use(API.poll_attendanceApi, poll_attendanceRoute );
   // app.use(API.commentsApi, commentsRoute );
   
+  Users.sync()
+  Poll.sync()
+  Poll_Answer.sync()
+  Poll_Attendances.sync()
+  Comments.sync()
 
   app.listen(process.env.PORT, function () {
     console.log("Server is ready at" + process.env.PORT);
   });
   // Start the server
-  app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
+  // app.listen(port, () => {
+  //   console.log(`Server listening on port ${port}`);
+  // });
 
 }
 

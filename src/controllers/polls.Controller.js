@@ -1,10 +1,8 @@
 const asyncHandler = require("../middleware/asyncHandler");
 //const db = require("../services/database");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
-const poll = require("../sequelize/models/polls");
 const e = require("express");
-const polls = require("../sequelize/models/polls");
-//const logger = require("../services/logger").logger;
+const polls = require("../models/polls");
 
 exports.createPoll = asyncHandler(async (req,res,next) => {
     const {userid} = req.params
@@ -15,7 +13,7 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
             message:"table is empty!!!",
         });
         }
-    await poll.findOne({
+    await polls.findOne({
         where: {
             [Op.and]: [{userid:userid},{question:question}]
         }

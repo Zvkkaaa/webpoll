@@ -5,7 +5,7 @@
  */
 const dotenv = require("dotenv");
 // Аппын тохиргоог process.env рүү ачаалах
-dotenv.config({ path: "./config/config.env" });
+dotenv.config({ path: "./src/config/config.env" });
 
 const webServer = require("./src/services/web-server");
 const database = require("./src/services/database");
