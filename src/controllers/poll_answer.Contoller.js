@@ -3,7 +3,7 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { Op, QueryTypes,Sequelize } = require("sequelize");
 const poll = require("../sequelize/models/polls");
 const e = require("express");
-const poll_answers = require("../sequelize/models/poll_answer");
+const poll_answers = require("../sequelize/models/poll_answers");
 //const logger = require("../services/logger").logger;
 
 exports.getPollAnswers = asyncHandler(async (req,res,next)=>{

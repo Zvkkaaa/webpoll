@@ -1,4 +1,4 @@
-const { getPollAttendance } = require("../controllers/poll_attendance.Controllers");
+const { getPollAttendance } = require("../controllers/poll_attendance.Controller");
 const { protect} = require("../middleware/protect")
 const router = require("express").Router();
 

@@ -1,6 +1,6 @@
 const asyncHandler = require("../middleware/asyncHandler");
 //const db = require("../services/database");
-const { Op, QueryTypes } = require("sequelize");
+const { Op, QueryTypes, Sequelize } = require("sequelize");
 const comment = require("../sequelize/models/comments");
 //var Sequelize = require("../sequelize/migrations/20230607013740-create-comments");
 const e = require("express");
