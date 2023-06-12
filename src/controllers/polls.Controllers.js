@@ -73,4 +73,28 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
       if(poll) res.status(200).json(poll);
       else res.status(400).json("Poll doesn't exist!");
     })
-      
+    exports.deletePoll = asyncHandler(async(req,res,next)=>{
+      try{
+        const  {id,userid}= req.params;
+      const poll = await polls.findOne({
+        where: {
+          id:id,
+          userid:userid,
+        }
+      });
+      if(poll){
+        if(poll.userid +"" !==""+userid+"")throw new Error("You cant delete that poll, because you not owner");
+        else{
+          polls.splice(index,1);
+          await poll.remove();
+          res.status(200).json("poll deleted!");
+        }
+      }
+      else{
+        res.status(200).json("poll doesn't exist");
+      }
+      }
+      catch(e){
+        res.status(400).json({error: e.message});
+      }
+    });

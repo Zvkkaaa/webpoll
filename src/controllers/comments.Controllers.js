@@ -68,3 +68,18 @@ exports.editComments = asyncHandler(async(req,res,next)=>{
     res.status(400).json({ error: e.message });
   }
 });
+exports.deleteComment = asyncHandler(async (req,res,next)=>{
+  const {id,userid} = req.params;
+  const comment = await comments.findById(id);
+  if(comment){
+    if(comment.userid+ "" !== ""+userid+""){
+      res.status(200).json("can't delete comment because you're not the owner!");
+    }
+    else{
+      comments.splice(index,1);
+      comment.remove();
+      res.status(200).json("Comment deleted successfully");
+    }
+  }
+  else res.status(200).json("Comment doesn't exist")
+});
