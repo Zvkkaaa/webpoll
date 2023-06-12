@@ -1,10 +1,10 @@
 const asyncHandler = require("../middleware/asyncHandler");
 //const db = require("../services/database");
-const { Op, QueryTypes } = require("sequelize");
+const { Op, QueryTypes, Sequelize } = require("sequelize");
 const poll = require("../sequelize/models/polls");
 const e = require("express");
 const polls = require("../sequelize/models/polls");
-//const logger = require("../services/logger").logger;
+const logger = require("../services/logger").logger;
 
 exports.createPoll = asyncHandler(async (req,res,next) => {
     const {userid} = req.params
@@ -53,7 +53,7 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
 
     //getAllpolls
     exports.getPolls = asyncHandler(async (req, res, next) => {
-          const polls = await polls.findAll({
+          const polls = await Polls.findAll({
             where: {
               userid: userid, 
             },
@@ -72,7 +72,8 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
       });
       if(poll) res.status(200).json(poll);
       else res.status(400).json("Poll doesn't exist!");
-    })
+    });
+    
     exports.deletePoll = asyncHandler(async(req,res,next)=>{
       try{
         const  {id,userid}= req.params;
@@ -98,3 +99,24 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
         res.status(400).json({error: e.message});
       }
     });
+     exports.updatePoll = asyncHandler(async (req,res,next)=>{
+      const {pollid} = req.params;
+      const {user} = req.user;
+      const {question, startdate,expiredate} = req.body;
+      const poll = await polls.findById(pollid);
+      if(poll){
+        if(poll.userid +"" ==""+user.id){
+          poll.question = question ? question:undefined;
+          poll.startdate = startdate ? startdate:undefined;
+          poll.expiredate = expiredate ? expiredate:undefined;
+          poll.save();
+          res.status(200).json("Poll updated succesfully");
+        }
+        else{
+          res.status(200).json("Can't edit because you're not the owner");
+        }
+      }
+      else{
+        res.status(200).json("Poll doesn't exist!");
+      }
+     });
