@@ -4,7 +4,7 @@ const { Op, QueryTypes, Sequelize } = require("sequelize");
 const poll = require("../sequelize/models/polls");
 const e = require("express");
 const polls = require("../sequelize/models/polls");
-const logger = require("../services/logger").logger;
+//const logger = require("../services/logger").logger;
 
 exports.createPoll = asyncHandler(async (req,res,next) => {
     const {userid} = req.params

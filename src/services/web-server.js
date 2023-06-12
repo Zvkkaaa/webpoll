@@ -4,7 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const app = express();
-const port = 3000;
+const port = 6000;
 
 // // Set up view engine
 // app.set('view engine', 'ejs');
