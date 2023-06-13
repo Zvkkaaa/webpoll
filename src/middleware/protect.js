@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const logger = morgan("combined");
 
 exports.protect = asyncHandler(async (req, res, next) => {
+  console.log(req.headers.authorization);
   if (!req.headers.authorization) {
     res.status(401).json({
       success: false,
@@ -28,7 +29,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     // req.login = decoded.payload.login;
     // req.company_id = decoded.payload.company_id;
     // req.is_type = decoded.payload.is_type;
-   
+
     // req.check_lot_id = decoded.payload.check_lot_id;
     // // req.username = decoded.payload.username;
     // // const connection_id = "odoo_undram";

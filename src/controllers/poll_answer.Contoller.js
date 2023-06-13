@@ -1,20 +1,19 @@
 const asyncHandler = require("../middleware/asyncHandler");
 //const db = require("../services/database");
-const { Op, QueryTypes,Sequelize } = require("sequelize");
+const { Op, QueryTypes, Sequelize } = require("sequelize");
 const polls = require("../models/polls");
 const e = require("express");
 const poll_answers = require("../models/poll_answer");
 //const logger = require("../services/logger").logger;
 
-exports.getPollAnswers = asyncHandler(async (req,res,next)=>{
+exports.getPollAnswers = asyncHandler(async (req, res, next) => {
   const pollid = req.params.id;
   const answers = await poll_answers.findAll({
-    where:{
-      pollid:pollid,
+    where: {
+      pollid: pollid,
     },
-    order: [["id","ASC"]],
+    order: [["id", "ASC"]],
   });
-  if(answers) res.status(200).json({answers, message:"Answers"});
-  else res.status(400).json({message: "Answers not exist"});
-  
+  if (answers) res.status(200).json({ answers, message: "Answers" });
+  else res.status(400).json({ message: "Answers not exist" });
 });

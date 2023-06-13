@@ -9,17 +9,19 @@ const PollAnswer = db.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    pollid:{
-        type: DataTypes.INTEGER,
+    pollid: {
+      type: DataTypes.INTEGER,
     },
     answername: {
       type: DataTypes.STRING,
     },
     createdAt: {
       type: DataTypes.DATE,
-      get(){
-        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
-      }
+      get() {
+        return moment(this.getDataValue("createdAt")).format(
+          "YYYY/MM/DD HH:mm"
+        );
+      },
     },
     updatedAt: {
       type: DataTypes.DATE,

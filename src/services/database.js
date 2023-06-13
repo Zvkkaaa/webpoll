@@ -37,7 +37,7 @@ async function initialize() {
     password: process.env.PG_PASSWORD,
   });
 
-  console.log(pool)
+  //console.log(pool)
 }
 
 async function close() {

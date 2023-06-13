@@ -22,9 +22,11 @@ const PollAttendance = db.define(
     },
     createdAt: {
       type: DataTypes.DATE,
-      get(){
-        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
-      }
+      get() {
+        return moment(this.getDataValue("createdAt")).format(
+          "YYYY/MM/DD HH:mm"
+        );
+      },
     },
     updatedAt: {
       type: DataTypes.DATE,

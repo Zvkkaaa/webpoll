@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const { Login } = require("../controllers/login.Controller");
-const { protect} = require("../middleware/protect")
-
+const { protect } = require("../middleware/protect");
 
 router.route("/login").post(Login);
 

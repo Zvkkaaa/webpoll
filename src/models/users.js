@@ -17,6 +17,9 @@ const Users = db.define(
     email: {
       type: DataTypes.STRING,
     },
+    password: {
+      type: DataTypes.STRING,
+    },
     birthdate: {
       type: DataTypes.DATE,
     },
@@ -26,9 +29,11 @@ const Users = db.define(
     },
     createdAt: {
       type: DataTypes.DATE,
-      get(){
-        return moment(this.getDataValue("createdAt")).format("YYYY/MM/DD HH:mm")
-      }
+      get() {
+        return moment(this.getDataValue("createdAt")).format(
+          "YYYY/MM/DD HH:mm"
+        );
+      },
     },
     updatedAt: {
       type: DataTypes.DATE,
