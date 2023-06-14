@@ -65,11 +65,10 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
                 });
    
                   const idd = new_poll.id
-                  let i
                   for(i in answer){
                     await poll_answers.create({
                       pollid: idd,
-                      answername: i,
+                      answername: answer[i],
                     })
                   }
 
