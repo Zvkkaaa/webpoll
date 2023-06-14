@@ -3,56 +3,96 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
 const e = require("express");
 const polls = require("../models/polls");
+const poll_answers = require("../models/poll_answer");
+// exports.createPoll = asyncHandler(async (req, res, next) => {
+//   const { question, startdate, expiredate} = req.body;
+//   //const { userid } = req.param;
+//   if (!question || !startdate || !expiredate) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "table is empty!!!",
+//     });
+//   }
+//   await polls
+//     .findOne({
+//       where: {
+//         [Op.and]: [ { question: question }],
+//       },
+//     })
+//     .then(async (result) => {
+//       if (result == null) {
+//         await polls
+//           .create({
+//             //userid: userid,
+//             question: question,
+//             startdate: startdate,
+//             expiredate: expiredate,
+//           })
+//           .then(async (result) => {
+//               res.status(200).json({
+//               success: true,
+//               message: "poll added successfully",
+//             });
+//           });
+//       } else {
+//         res.status(500).json({
+//           success: false,
+//           message: "service fault",
+//         });
+//       }
+//     });
+// });
 
-exports.createPoll = asyncHandler(async (req, res, next) => {
-  const { question, startdate, expiredate} = req.body;
-  //const { userid } = req.param;
-  if (!question || !startdate || !expiredate) {
-    return res.status(400).json({
-      success: false,
-      message: "table is empty!!!",
-    });
-  }
-  await polls
-    .findOne({
-      where: {
-        [Op.and]: [ { question: question }],
-      },
-    })
-    .then(async (result) => {
-      if (result == null) {
-        await polls
-          .create({
-            //userid: userid,
-            question: question,
-            startdate: startdate,
-            expiredate: expiredate,
-          })
-          .then(async (result) => {
-              res.status(200).json({
-              success: true,
-              message: "poll added successfully",
-            });
-          });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: "service fault",
-        });
+exports.createPoll = asyncHandler(async (req,res,next) => {
+  const { question,startdate,expiredate, answer} = req.body
+  if(!question || !startdate || !expiredate || !answer) {
+      return res.status(400).json({
+          success:false,
+          message:"table is empty!!!",
+      });
       }
-    });
-});
+  await polls.findOne({
+      where: {
+          [Op.and]: [{startdate:startdate},{question:question}]
+      }
+  })
+      .then(async(result) =>{
+          if(result == null){
+              const new_poll = await polls.create({
+                  question: question,
+                  startdate: startdate,
+                  expiredate: expiredate,
+                });
+   
+                  const idd = new_poll.id
+                  let i
+                  for(i in answer){
+                    await poll_answers.create({
+                      pollid: idd,
+                      answername: i,
+                    })
+                  }
 
+                  res.status(200).json({success:true, message:"added answer"});
+               
+          }else{
+              res.status(500).json({
+                  success: false, 
+                  message: "service fault",
+              });
+          }
+      });
+  });
 //getAllpolls
 exports.getPolls = asyncHandler(async (req, res, next) => {
-  const polls = await Polls.findAll({
+  const pollers = await polls.findAll({
     where: {
       userid: userid,
     },
     order: [["id", "DESC"]],
     raw: true,
   });
-  if (polls) res.status(200).json(polls);
+  if (pollers) res.status(200).json(pollers);
   else res.status(400).json({ error: error.message });
 });
 exports.getPoll = asyncHandler(async (req, res, next) => {

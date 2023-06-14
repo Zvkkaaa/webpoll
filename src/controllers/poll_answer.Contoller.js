@@ -25,9 +25,9 @@ exports.createPollAnswers = asyncHandler(async(req,res,next)=>{
     pollid:pollid,
     answername: answers[i],
     }).then(async(result)=>{
-      res.status(200).json("added poll answers!");
+      res.status(200).json("added poll answer!");
     }).catch((err)=>{
-      res.status(400).json("error in adding poll answers!!!")
+      res.status(err).json(err);
     });
   }
 });
