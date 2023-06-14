@@ -17,3 +17,17 @@ exports.getPollAnswers = asyncHandler(async (req, res, next) => {
   if (answers) res.status(200).json({ answers, message: "Answers" });
   else res.status(400).json({ message: "Answers not exist" });
 });
+exports.createPollAnswers = asyncHandler(async(req,res,next)=>{
+  const {pollid} = req.params;
+  const {answers} = req.body;
+  for(i in answers){
+   await poll_answers.create({
+    pollid:pollid,
+    answername: answers[i],
+    }).then(async(result)=>{
+      res.status(200).json("added poll answers!");
+    }).catch((err)=>{
+      res.status(400).json("error in adding poll answers!!!")
+    });
+  }
+});

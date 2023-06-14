@@ -5,8 +5,8 @@ const e = require("express");
 const polls = require("../models/polls");
 
 exports.createPoll = asyncHandler(async (req, res, next) => {
-  const { userid } = req.user.id;
-  const { question, startdate, expiredate, answer } = req.body;
+  const { question, startdate, expiredate} = req.body;
+  //const { userid } = req.param;
   if (!question || !startdate || !expiredate) {
     return res.status(400).json({
       success: false,
@@ -16,30 +16,22 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
   await polls
     .findOne({
       where: {
-        [Op.and]: [{ userid: userid }, { question: question }],
+        [Op.and]: [ { question: question }],
       },
     })
     .then(async (result) => {
       if (result == null) {
-        const new_poll = await polls
+        await polls
           .create({
-            userid: user.id,
+            //userid: userid,
             question: question,
             startdate: startdate,
             expiredate: expiredate,
           })
           .then(async (result) => {
-            console.log(new_poll + "   created poll but not answers");
-            let new_poll_id = new_poll.id;
-            for (i in answer) {
-              await poll.answers.create({
-                pollid: new_poll_id,
-                answername: answer[i],
-              });
-            }
-            return res.status(200).json({
+              res.status(200).json({
               success: true,
-              message: "poll and it's answers added successfully",
+              message: "poll added successfully",
             });
           });
       } else {
