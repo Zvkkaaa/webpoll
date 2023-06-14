@@ -1,42 +1,42 @@
-const DataTypes = require("sequelize");
-const db = require("../services/database");
+  const DataTypes = require("sequelize");
+  const db = require("../services/database");
 
-const Polls = db.define(
-  "polls",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    userid: {
-      type: DataTypes.INTEGER,
-    },
-    question: {
-      type: DataTypes.STRING,
-    },
+  const Polls = db.define(
+    "polls",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      userid: {
+        type: DataTypes.INTEGER,
+      },
+      question: {
+        type: DataTypes.STRING,
+      },
 
-    startdate: {
-      type: DataTypes.DATE,
-    },
-    expiredate: {
-      type: DataTypes.DATE,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      get() {
-        return moment(this.getDataValue("createdAt")).format(
-          "YYYY/MM/DD HH:mm"
-        );
+      startdate: {
+        type: DataTypes.DATE,
+      },
+      expiredate: {
+        type: DataTypes.DATE,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        get() {
+          return moment(this.getDataValue("createdAt")).format(
+            "YYYY/MM/DD HH:mm"
+          );
+        },
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
       },
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-    },
-  },
-  {
-    freezeTableName: true,
-  }
-);
+    {
+      freezeTableName: true,
+    }
+  );
 
-module.exports = Polls;
+  module.exports = Polls;
