@@ -39,17 +39,32 @@ exports.createComment = asyncHandler(async (req, res, netx) => {
 //   }
 // });
 //writing another getComments
+// exports.getComments = asyncHandler(async (req, res, next) => {
+//   const { pollid } = req.params.pollid;
+//   await comments.findAll({
+//     where: {
+//       pollid: pollid,
+//       order: [["posteddate", "DESC"]],
+//       raw: true,
+//     },
+//   });
+//   res.status(200).json(comments);
+// });
 exports.getComments = asyncHandler(async (req, res, next) => {
-  const { pollid } = req.params.pollid;
-  await comments.findAll({
+  const idd = req.params.id; // Assuming the parameter name is "id"
+  // Assuming "polls" is your Sequelize model
+  const commentos = await comments.findAll({
     where: {
-      pollid: pollid,
-      order: [["posteddate", "DESC"]],
-      raw: true,
+      pollid: idd,
     },
   });
-  res.status(200).json(comments);
+  if (commentos) {
+    res.status(200).json(commentos);
+  } else {
+    res.status(400).json("Comments doesn't exist!");
+  }
 });
+
 
 exports.editComment = asyncHandler(async (req, res, next) => {
   try {

@@ -56,9 +56,9 @@ function initialize() {
   app.use('/auth', loginRoute);
   app.use('/user', usersRoute);
   app.use('/poll', pollsRoute);
-  app.use('/poll/:id', poll_answerRoute);
-  app.use('/poll/:id/result', poll_attendanceRoute);
-  app.use('/poll/:id', commentsRoute);
+  app.use('/answers', poll_answerRoute);
+  app.use('/attendance', poll_attendanceRoute);
+  app.use('/comment', commentsRoute);
 
 
   app.use("/public", express.static("public"));
