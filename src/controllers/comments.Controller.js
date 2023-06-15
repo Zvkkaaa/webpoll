@@ -8,13 +8,14 @@ exports.createComment = asyncHandler(async (req, res, netx) => {
   try {
     const { pollid } = req.params.pollid;
     const { comment } = req.body;
+    const username = req.username;
     const poll = await poll.findById(pollid);
     if (!poll) {
       throw new Error("throwing error!!! cuz we dont know");
     }
     await Comment.create({
       pollid: pollid,
-      userid: req.usersid,
+      username: username,
       comment: comment,
       posteddate: Date.now(),
     });
