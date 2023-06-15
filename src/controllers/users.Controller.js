@@ -165,20 +165,29 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+// exports.deleteUser = asyncHandler(async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const user = await users.findById(id);
+//     if (user) {
+//       if (user.role !== "Admin" && user.role !== "admin") {
+//         // Remove the user from the database
+//         await user.remove();
+//         res.status(200).json("User removed successfully!");
+//       } else {
+//         res.status(403).json("Can't remove admin!");
+//       }
+//     } else {
+//       res.status(404).json("User not found");
+//     }
+//   } catch (error) {
+//     console.error('Error deleting user:', error);
+//     res.status(500).json("Internal server error");
+//   }
+// });
 
-exports.deleteUser = asyncHandler(async (req, res, next) => {
-  const id = req.params;
-  const user = await users.findById(id);
-  if (user) {
-    if (user.role!=="Admin" || user.role!=="admin") {
-      users.splice(index, 1);
-      user.remove();
-      res.status(200).json("User removed successfully!");
-    } else res.status(200).json("Can't remove admin!");
-  } else {
-    res.status(200).json("user doesn't exist");
-  }
-});
+
+
 exports.updateUser = asyncHandler(async (req, res, next) => {
   const id = req.params;
   const { email, username, password, birthdate, role } = req.body;
@@ -213,15 +222,25 @@ exports.getUsername = asyncHandler(async (req, res, next) => {
     });
 });
 exports.deleteUser = asyncHandler(async (req, res, next) => {
-  const id = req.params;
-  const user = await Users.findById(id);
+  const id = req.params.id;
+  const user = await users.findOne({
+    where: {
+      id: id,
+    },
+  });
+
   if (user) {
-    if (user.role + "" !== "" + "Admin") {
-      Users.splice(index, 1);
-      user.remove();
+    if (user.role !== "Admin") {
+      await users.destroy({
+        where: {
+          id: id,
+        },
+      });
       res.status(200).json("User removed successfully!");
-    } else res.status(200).json("Can't remove admin!");
+    } else {
+      res.status(200).json("Can't remove admin!");
+    }
   } else {
-    res.status(200).json("user doesn't exist");
+    res.status(404).json("User doesn't exist");
   }
 });
