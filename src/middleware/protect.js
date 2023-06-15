@@ -31,7 +31,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     // req.is_type = decoded.payload.is_type;
 
     // req.check_lot_id = decoded.payload.check_lot_id;
-    // // req.username = decoded.payload.username;
+    req.username = decoded.payload.username;
     // // const connection_id = "odoo_undram";
     // // req.odoo_conn = odoo[connection_id];
 

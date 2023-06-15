@@ -9,8 +9,9 @@
         primaryKey: true,
         autoIncrement: true,
       },
-      userid: {
-        type: DataTypes.INTEGER,
+      username: {
+        type: DataTypes.STRING,
+        unique: true,
       },
       question: {
         type: DataTypes.STRING,

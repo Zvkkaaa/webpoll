@@ -7,8 +7,8 @@
 
 
   exports.createPoll = asyncHandler(async (req,res,next) => {
-    const { question,startdate,expiredate, answer} = req.body
-    const userid = req.userid;
+    const {question,startdate,expiredate, answer} = req.body
+    const username = req.username;
     if(!question || !startdate || !expiredate || !answer) {
         return res.status(400).json({
             success:false,
@@ -23,7 +23,8 @@
         .then(async(result) =>{
             if(result == null){
                 const new_poll = await polls.create({
-                  userid: userid,
+                    //userid: userid,
+                    username: username,
                     question: question,
                     startdate: startdate,
                     expiredate: expiredate,
@@ -49,13 +50,7 @@
     });
   //getAllpolls
   exports.getPolls = asyncHandler(async (req, res, next) => {
-    const pollers = await polls.findAll({
-      where: {
-        userid: userid,
-      },
-      order: [["id", "DESC"]],
-      raw: true,
-    });
+    const pollers = await polls.findAll();
     if (pollers) res.status(200).json(pollers);
     else res.status(400).json({ error: error.message });
   });
