@@ -43,36 +43,36 @@ const poll_answers = require("../models/poll_answer");
 //     });
 // });
 
-  exports.createPoll = asyncHandler(async (req,res,next) => {
-    const { question,startdate,expiredate, answer} = req.body
-    const userid = req.userid;
-    if(!question || !startdate || !expiredate || !answer) {
-        return res.status(400).json({
-            success:false,
-            message:"table is empty!!!",
-        });
-        }
-    await polls.findOne({
-        where: {
-            [Op.and]: [{startdate:startdate},{question:question}]
-        }
-    })
-        .then(async(result) =>{
-            if(result == null){
-                const new_poll = await polls.create({
-                  userid: userid,
-                    question: question,
-                    startdate: startdate,
-                    expiredate: expiredate,
-                  });
-    
-                    const idd = new_poll.id
-                    for(i in answer){
-                      await poll_answers.create({
-                        pollid: idd,
-                        answername: answer[i],
-                      })
-                    }
+exports.createPoll = asyncHandler(async (req,res,next) => {
+  const { question,startdate,expiredate, answer} = req.body
+  const username = req.username
+  if(!question || !startdate || !expiredate || !answer) {
+      return res.status(400).json({
+          success:false,
+          message:"table is empty!!!",
+      });
+      }
+  await polls.findOne({
+      where: {
+          [Op.and]: [{startdate:startdate},{question:question}]
+      }
+  })
+      .then(async(result) =>{
+          if(result == null){
+              const new_poll = await polls.create({
+                  username: username,
+                  question: question,
+                  startdate: startdate,
+                  expiredate: expiredate,
+                });
+   
+                  const idd = new_poll.id
+                  for(i in answer){
+                    await poll_answers.create({
+                      pollid: idd,
+                      answername: answer[i],
+                    })
+                  }
 
                     res.status(200).json({success:true, message:"added answer"});
                 
