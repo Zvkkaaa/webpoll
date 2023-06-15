@@ -9,12 +9,14 @@
 
 const { protect } = require("../middleware/protect");
 const { createUser } = require("../controllers/users.Controller");
+const {registerUser} = require("../controllers/users.Controller");
 const { getUsers } = require("../controllers/users.Controller");
 const { getUsername } = require("../controllers/users.Controller");
 const router = require("express").Router();
 //const {getoneUser} = require("../controllers/users.Controller/")
 router.route("/createUser").post(createUser);
-router.route("/getUsers").get(getUsers);
+router.route("/getUsers").get(protect,getUsers);
 //router.route("/getuser").get(getoneUser);
 router.route("/:id/getUsername").get(getUsername);
+router.route("/regUser").post(registerUser);
 module.exports = router;
