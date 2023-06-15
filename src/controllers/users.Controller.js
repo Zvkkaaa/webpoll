@@ -141,6 +141,31 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
     message: "Хэрэглэгчийн жагсаалт",
   });
 });
+
+// bek wrote it, probably wrong
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+
+  const user = await users.findOne({
+    where: {
+      id: id
+    }
+  });
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found"
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user
+  });
+});
+
+
 exports.deleteUser = asyncHandler(async (req, res, next) => {
   const id = req.params;
   const user = await users.findById(id);
@@ -173,6 +198,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     res.status(200).json("User doesn't exist");
   }
 });
+
 exports.getUsername = asyncHandler(async (req, res, next) => {
   const userid = req.params.id;
   const user = await users.findOne({
