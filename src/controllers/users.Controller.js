@@ -72,6 +72,57 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     });
 });
 
+
+exports.registerUser = asyncHandler(async (req, res, next) => {
+  const { username, email, password, birthdate, role } = req.body;
+
+  if (!username || !email || !password || !birthdate || !role) {
+    console.log("aldaa end bn");
+    return res.status(400).json({
+      success: false,
+      message: "Талбар дутуу байна",
+    });
+  }
+
+  const existingUser = await users.findAll({
+    where: {
+      [Op.or]: [{ username: username }, { email: email }],
+    },
+  });
+
+  if (existingUser.length > 0) {
+    return res.status(500).json({
+      success: false,
+      message: "Бүртэлтэй байна",
+    });
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    let encryptedPassword = await bcrypt.hash(password, salt);
+    console.log("burteneee");
+    await users.create({
+      username: username,
+      email: email,
+      password: encryptedPassword,
+      birthdate: birthdate,
+      role: role,
+    });
+    console.log("burtgetseeen");
+    return res.status(200).json({
+      success: true,
+      // token: encryptedPassword,
+      message: "Амжилттай бүртгэлээ",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Сервертэй холбогдож чадсангүй",
+    });
+  }
+});
+
 exports.getUsers = asyncHandler(async (req, res, next) => {
   //method for admin that gets every users
   const userList = await users
@@ -90,11 +141,36 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
     message: "Хэрэглэгчийн жагсаалт",
   });
 });
+
+// bek wrote it, probably wrong
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+
+  const user = await users.findOne({
+    where: {
+      id: id
+    }
+  });
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found"
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user
+  });
+});
+
+
 exports.deleteUser = asyncHandler(async (req, res, next) => {
   const id = req.params;
   const user = await users.findById(id);
   if (user) {
-    if (user.role + "" !== "" + "Admin") {
+    if (user.role!=="Admin" || user.role!=="admin") {
       users.splice(index, 1);
       user.remove();
       res.status(200).json("User removed successfully!");
@@ -122,6 +198,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     res.status(200).json("User doesn't exist");
   }
 });
+
 exports.getUsername = asyncHandler(async (req, res, next) => {
   const userid = req.params.id;
   const user = await users.findOne({
