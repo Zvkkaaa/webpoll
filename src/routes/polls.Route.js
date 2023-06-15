@@ -7,7 +7,7 @@ const router = require("express").Router();
 
 router.route("/createPoll").post(protect,createPoll);
 router.route("/list").get(getPolls);
-router.route("/view").get(getPoll);
-router.route("delete").delete(deletePoll)
+router.route("/:id").get(getPoll);
+router.route("/delete").delete(deletePoll)
 
 module.exports = router;

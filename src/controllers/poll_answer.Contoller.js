@@ -1,22 +1,38 @@
 const asyncHandler = require("../middleware/asyncHandler");
 //const db = require("../services/database");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
-const polls = require("../models/polls");
 const e = require("express");
 const poll_answers = require("../models/poll_answer");
-//const logger = require("../services/logger").logger;
-
 exports.getPollAnswers = asyncHandler(async (req, res, next) => {
-  const pollid = req.params.id;
-  const answers = await poll_answers.findAll({
+  const idd = req.params.id; // Assuming the parameter name is "id"
+  // Assuming "polls" is your Sequelize model
+  const poll = await poll_answers.findAll({
     where: {
-      pollid: pollid,
+      pollid: idd,
     },
-    order: [["id", "ASC"]],
   });
-  if (answers) res.status(200).json({ answers, message: "Answers" });
-  else res.status(400).json({ message: "Answers not exist" });
+  if (poll) {
+    res.status(200).json(poll);
+  } else {
+    res.status(400).json("Poll answers doesn't exist!");
+  }
 });
+
+/*
+exports.getPoll = asyncHandler(async (req, res, next) => {
+  const pollId = req.params.id; // Assuming the parameter name is "id"
+  // Assuming "polls" is your Sequelize model
+  const poll = await polls.findOne({
+    where: {
+      id: pollId,
+    },
+  });
+  if (poll) {
+    res.status(200).json(poll);
+  } else {
+    res.status(400).json("Poll doesn't exist!");
+  }
+});*/
 exports.createPollAnswers = asyncHandler(async(req,res,next)=>{
   const {pollid} = req.params;
   const {answers} = req.body;

@@ -11,7 +11,6 @@
       },
       username: {
         type: DataTypes.STRING,
-        unique: true,
       },
       question: {
         type: DataTypes.STRING,

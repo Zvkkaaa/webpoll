@@ -54,7 +54,7 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
       }
   await polls.findOne({
       where: {
-          [Op.and]: [{startdate:startdate},{question:question}]
+          question:question,
       }
   })
       .then(async(result) =>{
@@ -90,16 +90,24 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
     if (pollers) res.status(200).json(pollers);
     else res.status(400).json({ error: error.message });
   });
-  exports.getPoll = asyncHandler(async (req, res, next) => {
-    const pollid = req.params;
-    const poll = await polls.findOne({
-      where: {
-        id: pollid,
-      },
-    });
-    if (poll) res.status(200).json(poll);
-    else res.status(400).json("Poll doesn't exist!");
+// Assuming you have the necessary imports and dependencies
+
+// Controller function
+exports.getPoll = asyncHandler(async (req, res, next) => {
+  const idd = req.params.id; // Assuming the parameter name is "id"
+  // Assuming "polls" is your Sequelize model
+  const poll = await polls.findOne({
+    where: {
+      id: idd,
+    },
   });
+  if (poll) {
+    res.status(200).json(poll);
+  } else {
+    res.status(400).json("Poll doesn't exist!");
+  }
+});
+
 
 exports.deletePoll = asyncHandler(async (req, res, next) => {
   try {
