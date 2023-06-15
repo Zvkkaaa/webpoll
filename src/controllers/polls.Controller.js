@@ -45,6 +45,7 @@ const poll_answers = require("../models/poll_answer");
 
 exports.createPoll = asyncHandler(async (req,res,next) => {
   const { question,startdate,expiredate, answer} = req.body
+  const userid = req.userid
   if(!question || !startdate || !expiredate || !answer) {
       return res.status(400).json({
           success:false,
@@ -59,7 +60,8 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
       .then(async(result) =>{
           if(result == null){
               const new_poll = await polls.create({
-                  question: question,
+                userid:userid,  
+                question: question,
                   startdate: startdate,
                   expiredate: expiredate,
                 });
