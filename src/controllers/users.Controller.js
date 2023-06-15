@@ -164,49 +164,41 @@ exports.getUser = asyncHandler(async (req, res, next) => {
     user
   });
 });
-
-// exports.deleteUser = asyncHandler(async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const user = await users.findById(id);
-//     if (user) {
-//       if (user.role !== "Admin" && user.role !== "admin") {
-//         // Remove the user from the database
-//         await user.remove();
-//         res.status(200).json("User removed successfully!");
-//       } else {
-//         res.status(403).json("Can't remove admin!");
-//       }
-//     } else {
-//       res.status(404).json("User not found");
-//     }
-//   } catch (error) {
-//     console.error('Error deleting user:', error);
-//     res.status(500).json("Internal server error");
-//   }
-// });
-
-
-
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  const id = req.params;
+  const id = req.params.id;
   const { email, username, password, birthdate, role } = req.body;
-  const user = await users.findById(id);
+  
+  const user = await users.findOne({ where: { id: id } });
+  
   if (user) {
-    user.email = email ? email : undefined;
-    //comment.text = text ? text : undefined;
-    user.email = email ? email : undefined;
-    user.username = username ? username : undefined;
-    user.password = password ? password : undefined;
-    user.birthdate = birthdate ? birthdate : undefined;
-    user.role = role ? role : undefined;
+    const updatedUserData = {};
 
-    user.save();
+    if (email) {
+      updatedUserData.email = email;
+    }
+    if (username) {
+      updatedUserData.username = username;
+    }
+    // Uncomment and update the password field if needed in the future
+    // if (password) {
+    //   updatedUserData.password = password;
+    // }
+    if (birthdate) {
+      updatedUserData.birthdate = birthdate;
+    }
+    if (role) {
+      updatedUserData.role = role;
+    }
+
+    await users.update(updatedUserData, { where: { id: id } });
     res.status(200).json("User info edited");
   } else {
-    res.status(200).json("User doesn't exist");
+    res.status(404).json("User doesn't exist");
   }
 });
+
+
+
 
 exports.getUsername = asyncHandler(async (req, res, next) => {
   const userid = req.params.id;
