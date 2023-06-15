@@ -86,13 +86,7 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
     });
   //getAllpolls
   exports.getPolls = asyncHandler(async (req, res, next) => {
-    const pollers = await polls.findAll({
-      where: {
-        userid: userid,
-      },
-      order: [["id", "DESC"]],
-      raw: true,
-    });
+    const pollers = await polls.findAll();
     if (pollers) res.status(200).json(pollers);
     else res.status(400).json({ error: error.message });
   });

@@ -14,8 +14,8 @@ const Comments = db.define(
       type: DataTypes.INTEGER,
     },
 
-    userid: {
-      type: DataTypes.INTEGER,
+    username: {
+      type: DataTypes.STRING,
     },
     comment: {
       type: DataTypes.STRING,
