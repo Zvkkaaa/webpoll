@@ -96,7 +96,6 @@ exports.adminLogin = asyncHandler(async (req, res, next) => {
     });
     return;
   }
-
   await Users.findOne({
     where: {
       email: email,
@@ -154,6 +153,7 @@ exports.adminLogin = asyncHandler(async (req, res, next) => {
           });
           return;
         } else {
+          console.log("this");
           res.status(400).json({
             success: false,
             message: "Нэвтрэх нэр эсвэл нууц үг буруу байна",

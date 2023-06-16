@@ -20,5 +20,5 @@ router.route("/createUser").post(createUser);
 router.route("/getUsers").get(getUsers);
 router.route("/:id").get(getUser);
 router.route("/:id/getUsername").get(getUsername);
-router.route("/regUser").post(protect,registerUser);
+router.route("/regUser").post(registerUser);
 module.exports = router;
