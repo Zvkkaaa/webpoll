@@ -24,7 +24,7 @@ exports.Login = asyncHandler(async (req, res, next) => {
     },
   })
     .then((result) => {
-      console.log("******", result);
+      //console.log("******", result);
       if (result == null) {
         res.status(500).json({
           success: false,
@@ -61,7 +61,7 @@ exports.Login = asyncHandler(async (req, res, next) => {
             }
           );
           //  const token = userController.generateJwt(userid, roleid);
-          //   console.log("login authorized!!!!!")
+            console.log(token);
           res.status(200).json({
             success: true,
             message: "Амжилттай нэвтэрлээ",

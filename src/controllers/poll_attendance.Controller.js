@@ -3,18 +3,23 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
 const poll_attendance = require("../models/poll_attendance");
 const e = require("express");
-//const poll_answers = require("../models/poll_answer");
+const poll_answers = require("../models/poll_answer");
 
 exports.getPollAttendance = async (req, res, next) => {
-    const { pollid } = req.params;
-    const answers = await poll_answers.findById(pollid);
-    const answerNums = [];
-    for (ans in answers) {
+    const pollid = req.params.id;
+    const answers = await poll_answers.findAll({
+      where: {
+        pollid:pollid,
+      }
+    });
+   // console.log("------------------"+answers+"--------------");
+    let answerNums = [];
+    for (i in answers) {
       let temp = 0;
       let attendancy = await poll_attendance.findAll({
         where: {
           pollid: pollid,
-          answerid: ans.id,
+          answerid: answers[i].id,
         },
       });
       temp = attendancy.length;
