@@ -13,6 +13,8 @@ const {registerUser} = require("../controllers/users.Controller");
 const { getUsers } = require("../controllers/users.Controller");
 const { getUsername } = require("../controllers/users.Controller");
 const { getUser } = require("../controllers/users.Controller");
+const { deleteUser } = require("../controllers/users.Controller");
+const { updateUser } = require("../controllers/users.Controller");
 
 const router = require("express").Router();
 //const {getoneUser} = require("../controllers/users.Controller/")
@@ -20,5 +22,7 @@ router.route("/createUser").post(createUser);
 router.route("/getUsers").get(getUsers);
 router.route("/:id").get(getUser);
 router.route("/:id/getUsername").get(getUsername);
-router.route("/regUser").post(registerUser);
+router.route("/regUser").post(protect,registerUser);
+router.route("/deleteUser/:id").delete(deleteUser);
+router.route("/updateUser/:id").put(updateUser);
 module.exports = router;
