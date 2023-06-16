@@ -4,7 +4,7 @@ const { Op, QueryTypes, Sequelize } = require("sequelize");
 const poll_attendance = require("../models/poll_attendance");
 const e = require("express");
 const poll_answers = require("../models/poll_answer");
-
+const polls = require("../models/polls");
 exports.getPollAttendance = async (req, res, next) => {
     const pollid = req.params.id;
     const answers = await poll_answers.findAll({
@@ -12,7 +12,7 @@ exports.getPollAttendance = async (req, res, next) => {
         pollid:pollid,
       }
     });
-   // console.log("------------------"+answers+"--------------");
+   console.log(answers);
     let answerNums = [];
     for (i in answers) {
       let temp = 0;
@@ -25,6 +25,7 @@ exports.getPollAttendance = async (req, res, next) => {
       temp = attendancy.length;
       answerNums.push(temp);
     }
+    console.log("--------------"+answerNums+"------------");
     res.status(200).json(answerNums);
 };
 exports.createPollAttendance = async (req,res,next) => {
@@ -59,4 +60,41 @@ exports.createPollAttendance = async (req,res,next) => {
   else{
     res.status(500).json("already submitted this poll!!!");
   }
+};
+exports.getResult = async (req, res, next) => {
+  const pollid = req.params.id;
+  const poll = await polls.findOne({
+    where: {
+      id:pollid,
+    }
+  });
+  const answers = await poll_answers.findAll({
+    where: {
+      pollid:pollid,
+    }
+  });
+  let answerNums = [];
+  for (i in answers) {
+    let temp = 0;
+    let attendancy = await poll_attendance.findAll({
+      where: {
+        pollid: pollid,
+        answerid: answers[i].id,
+      },
+    });
+    temp = attendancy.length;
+    answerNums.push(temp);
+  }
+  let zzz =[];
+  for(i in answers.length){
+    const answer = answers[i].answername;
+    const count = answerNums[i];
+    zzz.push(answer,count);
+  }
+ let xxx = {
+  id,
+  question: poll.question,
+  result : zzz
+ }
+  res.status(200).json(xxx);
 };

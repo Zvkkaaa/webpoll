@@ -47,3 +47,22 @@ exports.createPollAnswers = asyncHandler(async(req,res,next)=>{
     });
   }
 });
+exports.getAnswernames = asyncHandler(async(req,res,next)=>{
+  const pollid = req.params.id;
+  let answerName = [];
+  const answers = await poll_answers.findAll({
+    where: {
+      pollid:pollid,
+    }
+  });
+  if(answers){
+  for(i in answers){
+    answerName.push(answers[i].answername);
+    }
+    res.status(200).json(answerName);
+  }
+  else res.status(500).json({
+    success:false,
+    message: "Answers doesn't exist!"
+  });
+});
