@@ -148,7 +148,7 @@ exports.updatePoll = asyncHandler(async (req, res, next) => {
 
 exports.adminUpdatePoll = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
-  const { question, startDate, expireDate } = req.body;
+  const { question, startdate, expiredate } = req.body;
 
   const poll = await polls.findByPk(id);
 
@@ -161,13 +161,13 @@ exports.adminUpdatePoll = asyncHandler(async (req, res, next) => {
   if (question) {
     updatedPollData.question = question;
   }
-  if (startDate) {
-    updatedPollData.startDate = startDate;
+  if (startdate) {
+    updatedPollData.startdate = startdate;
   }
-  if (expireDate) {
-    updatedPollData.expireDate = expireDate;
+  if (expiredate) {
+    updatedPollData.expiredate = expiredate;
   }
-
+  
   await polls.update(updatedPollData, { where: { id: id } });
   res.status(200).json({ success: true, message: "Poll updated successfully" });
 });
