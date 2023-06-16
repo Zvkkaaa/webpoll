@@ -5,24 +5,37 @@ const e = require("express");
 const comments = require("../models/comments");
 
 exports.createComment = asyncHandler(async (req, res, netx) => {
-  try {
-    const { pollid } = req.params.pollid;
-    const { comment } = req.body;
-    const username = req.username;
-    const poll = await poll.findById(pollid);
-    if (!poll) {
-      throw new Error("throwing error!!! cuz we dont know");
-    }
-    await Comment.create({
-      pollid: pollid,
-      username: username,
-      comment: comment,
-      posteddate: Date.now(),
-    });
-    res.status(200).json(poll);
-  } catch (e) {
-    res.status(400).json({ error: e.message });
-  }
+  // try{
+  const username = req.username;
+  const pollId = req.params.id;
+  const {comment} = req.body;
+ // console.log(Date.now());
+ if(comment){
+  const commento = await comments.create({
+  username:username,
+  pollid:pollId,
+  comment : comment
+});
+if(commento){
+  //console.log(commento);
+  return res.status(200).json({
+    //success: true,
+   // message: "created comment for: "+pollId,
+    commento
+  });
+}else{
+  return res.status(500).json({
+    success: false,
+    message: "failed"
+  })
+}
+}
+else{ res.status(400).json({success: false,message: "table is empty"});}
+  
+
+  
+// }catch(err){res.status(400).json({err, message:err});}
+
 });
 // exports.getComments = asyncHandler(async(req, res, next) => {
 //   try {

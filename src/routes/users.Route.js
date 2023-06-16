@@ -25,4 +25,4 @@ router.route("/:id/getUsername").get(getUsername);
 router.route("/regUser").post(protect,registerUser);
 router.route("/deleteUser/:id").delete(deleteUser);
 router.route("/updateUser/:id").put(updateUser);
-module.exports = router;    
+module.exports = router;
