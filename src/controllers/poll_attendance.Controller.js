@@ -26,22 +26,32 @@ exports.createPollAttendance = async (req,res,next) => {
   const pollid = req.params.id;
   const answerid = req.params.answerid;
   const userid = req.userid;
-  if(answerid && pollid){
-    const attend = await poll_attendance.create({
-      pollid: pollid,
+  const attendance = await poll_attendance.findOne({
+    where:{
+      pollid:pollid,
       userid:userid,
-      answerid:answerid,
-    })
-    .then(async (result) => {
-      return res.status(200).json({
-        success: true,
-        // token: encryptedPassword,
-        message: "songuuli amjilttai",
-      });
-    })
+    }
+  });
+  if(!attendance){
+    if(answerid && pollid){
+      await poll_attendance.create({
+        pollid: pollid,
+        userid:userid,
+        answerid:answerid,
+      })
+      .then(async (result) => {
+        return res.status(200).json({
+          success: true,
+          // token: encryptedPassword,
+          message: "songuuli amjilttai",
+        });
+      })
+    }
+    else{
+      res.status(400).json("failed to save the option");
+    };  
   }
   else{
-    res.status(400).json("failed to save the option");
-  };
-
+    res.status(500).json("already submitted this poll!!!");
+  }
 };
