@@ -1,5 +1,6 @@
   const DataTypes = require("sequelize");
   const db = require("../services/database");
+  const moment = require('moment');
 
   const Polls = db.define(
     "polls",

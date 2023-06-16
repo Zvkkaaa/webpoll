@@ -145,3 +145,44 @@ exports.updatePoll = asyncHandler(async (req, res, next) => {
     res.status(200).json("Poll doesn't exist!");
   }
 });
+
+exports.adminUpdatePoll = asyncHandler(async (req, res, next) => {
+  const id = req.params.id;
+  const { question, startDate, expireDate } = req.body;
+
+  const poll = await polls.findByPk(id);
+
+  if (!poll) {
+    return next(new ErrorResponse("Poll not found", 404));
+  }
+
+  const updatedPollData = {};
+
+  if (question) {
+    updatedPollData.question = question;
+  }
+  if (startDate) {
+    updatedPollData.startDate = startDate;
+  }
+  if (expireDate) {
+    updatedPollData.expireDate = expireDate;
+  }
+
+  await polls.update(updatedPollData, { where: { id: id } });
+  res.status(200).json({ success: true, message: "Poll updated successfully" });
+});
+
+
+exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const poll = await polls.findByPk(id);
+
+  if (!poll) {
+    return next(new ErrorResponse("Poll not found", 404));
+  }
+
+  await polls.destroy({ where: { id: id } });
+
+  res.status(200).json({ success: true, message: "Poll deleted successfully" });
+});
