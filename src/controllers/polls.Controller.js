@@ -186,3 +186,28 @@ exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Poll deleted successfully" });
 });
+exports.getPollsBySearchingQuestion = asyncHandler(async (req,res,next)=>{
+  const {quest}= req.body;
+  if(!quest){
+    const searchingPolls = await polls.findAll({
+      question : quest, 
+    });
+    if(searchingPolls){
+      res.status(200).json({
+        success: true,
+        searchingPolls
+      });
+    }else{
+      res.status(500).json({
+        success:false,
+        message:"Not found"
+      })
+    }
+  }else{
+    res.status(400).json({
+      success:false,
+      message:"Can't search empty!"
+    });
+    return;
+  }
+})
