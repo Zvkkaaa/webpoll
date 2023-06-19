@@ -190,7 +190,7 @@ exports.getPollsBySearchingQuestion = asyncHandler(async (req,res,next)=>{
   const {quest}= req.body;
   if(!quest){
     const searchingPolls = await polls.findAll({
-      question : quest, 
+      [Op.like]: `%${quest}%`
     });
     if(searchingPolls){
       res.status(200).json({
