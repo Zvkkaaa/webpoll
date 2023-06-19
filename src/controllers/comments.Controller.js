@@ -69,7 +69,9 @@ exports.getComments = asyncHandler(async (req, res, next) => {
   const commentos = await comments.findAll({
     where: {
       pollid: idd,
+      
     },
+    order: [["id","DESC"]],
   });
   if (commentos) {
     res.status(200).json(commentos);
