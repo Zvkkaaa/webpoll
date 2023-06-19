@@ -14,16 +14,20 @@ exports.createComment = asyncHandler(async (req, res, netx) => {
   const commento = await comments.create({
   username:username,
   pollid:pollId,
-  comment : comment
+  comment : comment,
 });
+
+console.log("88888888888888888888888888")
 if(commento){
+  console.log("added")
   //console.log(commento);
   return res.status(200).json({
-    //success: true,
-   // message: "created comment for: "+pollId,
+    // success: true,
+    //  message: "created comment for: "+pollId,
     commento
   });
 }else{
+  console.log("-----------------------------------------")
   return res.status(500).json({
     success: false,
     message: "failed"
@@ -64,20 +68,24 @@ else{ res.status(400).json({success: false,message: "table is empty"});}
 //   res.status(200).json(comments);
 // });
 exports.getComments = asyncHandler(async (req, res, next) => {
-  const idd = req.params.id; // Assuming the parameter name is "id"
-  // Assuming "polls" is your Sequelize model
-  const commentos = await comments.findAll({
-    where: {
-      pollid: idd,
-    },
-  });
-  if (commentos) {
-    res.status(200).json(commentos);
-  } else {
-    res.status(400).json("Comments doesn't exist!");
+  try {
+    const pollId = req.params.id;
+    console.log('Fetching comments for pollId:', pollId); 
+    const commentos = await comments.findAll({
+      where: {
+        pollid: pollId,
+      },
+    });
+    if (commentos) {
+      res.status(200).json(commentos);
+    } else {
+      res.status(400).json("Comments don't exist!");
+    }
+  } catch (error) {
+    console.error('Error in getComments:', error); 
+    res.status(500).json({ message: "An error occurred while fetching comments", error });
   }
 });
-
 
 exports.editComment = asyncHandler(async (req, res, next) => {
   try {
