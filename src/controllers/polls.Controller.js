@@ -43,63 +43,63 @@ const poll_answers = require("../models/poll_answer");
 //     });
 // });
 
-exports.createPoll = asyncHandler(async (req,res,next) => {
-  const { question,startdate,expiredate, answer} = req.body
+exports.createPoll = asyncHandler(async (req, res, next) => {
+  const { question, startdate, expiredate, answer } = req.body
   const username = req.username
-  if(!question || !startdate || !expiredate || !answer) {
-      return res.status(400).json({
-          success:false,
-          message:"table is empty!!!",
-      });
-      }
+  if (!question || !startdate || !expiredate || !answer) {
+    return res.status(400).json({
+      success: false,
+      message: "table is empty!!!",
+    });
+  }
   await polls.findOne({
-      where: {
-          question:question,
-      }
+    where: {
+      question: question,
+    }
   })
-      .then(async(result) =>{
-          if(result == null){
-              const new_poll = await polls.create({
-                  username: username,
-                  question: question,
-                  startdate: startdate,
-                  expiredate: expiredate,
-                });
-   
-                  const idd = new_poll.id
-                  for(i in answer){
-                    await poll_answers.create({
-                      pollid: idd,
-                      answername: answer[i],
-                    })
-                  }
-
-                    res.status(200).json({success:true, message:"added answer"});
-                
-            }else{
-                res.status(500).json({
-                    success: false, 
-                    message: "service fault",
-                });
-            }
+    .then(async (result) => {
+      if (result == null) {
+        const new_poll = await polls.create({
+          username: username,
+          question: question,
+          startdate: startdate,
+          expiredate: expiredate,
         });
+
+        const idd = new_poll.id
+        for (i in answer) {
+          await poll_answers.create({
+            pollid: idd,
+            answername: answer[i],
+          })
+        }
+
+        res.status(200).json({ success: true, message: "added answer" });
+
+      } else {
+        res.status(500).json({
+          success: false,
+          message: "service fault",
+        });
+      }
     });
-  //getAllpolls
-  exports.getPolls = asyncHandler(async (req, res, next) => {
-    const pollers = await polls.findAll();
-    if (pollers) res.status(200).json(pollers);
-    else res.status(400).json({ error: error.message });
+});
+//getAllpolls
+exports.getPolls = asyncHandler(async (req, res, next) => {
+  const pollers = await polls.findAll();
+  if (pollers) res.status(200).json(pollers);
+  else res.status(400).json({ error: error.message });
+});
+exports.getPoll = asyncHandler(async (req, res, next) => {
+  const idd = req.params.id;
+  const poll = await polls.findOne({
+    where: {
+      id: idd,
+    },
   });
-  exports.getPoll = asyncHandler(async (req, res, next) => {
-    const idd = req.params.id;
-    const poll = await polls.findOne({
-      where: {
-        id: idd,
-      },
-    });
-    if (poll) res.status(200).json(poll);
-    else res.status(400).json("Poll doesn't exist!");
-  });
+  if (poll) res.status(200).json(poll);
+  else res.status(400).json("Poll doesn't exist!");
+});
 
 
 exports.deletePoll = asyncHandler(async (req, res, next) => {
@@ -167,7 +167,7 @@ exports.adminUpdatePoll = asyncHandler(async (req, res, next) => {
   if (expiredate) {
     updatedPollData.expiredate = expiredate;
   }
-  
+
   await polls.update(updatedPollData, { where: { id: id } });
   res.status(200).json({ success: true, message: "Poll updated successfully" });
 });
@@ -186,28 +186,42 @@ exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Poll deleted successfully" });
 });
-exports.getPollsBySearchingQuestion = asyncHandler(async (req,res,next)=>{
-  const {quest}= req.body;
-  if(!quest){
-    const searchingPolls = await polls.findAll({
-      [Op.like]: `%${quest}%`
+exports.getPollsBySearchingQuestion = asyncHandler(async (req, res, next) => {
+  const quest = req.query.quest;
+
+  if (!quest) {
+    res.status(400).json({
+      success: false,
+      message: "Can't search empty!"
     });
-    if(searchingPolls){
+    return;
+  }
+
+  try {
+    const searchingPolls = await polls.findAll({
+      where: {
+        question: {
+          [Op.like]: `%${quest}%`
+        }
+      }
+    });
+
+    if (searchingPolls.length > 0) {
       res.status(200).json({
         success: true,
         searchingPolls
       });
-    }else{
-      res.status(500).json({
-        success:false,
-        message:"Not found"
-      })
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "No polls found"
+      });
     }
-  }else{
-    res.status(400).json({
-      success:false,
-      message:"Can't search empty!"
+  } catch (error) {
+    console.error('Error fetching polls:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
     });
-    return;
   }
-})
+});
