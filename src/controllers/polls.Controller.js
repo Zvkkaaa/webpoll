@@ -188,7 +188,7 @@ exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
 });
 // pollsController.js
 exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
-  const { question } = req.body;
+  const { question } = req.query;
   // Validate that the 'question' parameter is provided
   if (!question) {
     return res.status(400).json({
@@ -225,4 +225,3 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
     });
   }
 });
-
