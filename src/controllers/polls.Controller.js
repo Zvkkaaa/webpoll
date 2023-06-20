@@ -43,36 +43,36 @@ const poll_answers = require("../models/poll_answer");
 //     });
 // });
 
-exports.createPoll = asyncHandler(async (req,res,next) => {
-  const { question,startdate,expiredate, answer} = req.body
+exports.createPoll = asyncHandler(async (req, res, next) => {
+  const { question, startdate, expiredate, answer } = req.body
   const username = req.username
-  if(!question || !startdate || !expiredate || !answer) {
-      return res.status(400).json({
-          success:false,
-          message:"table is empty!!!",
-      });
-      }
+  if (!question || !startdate || !expiredate || !answer) {
+    return res.status(400).json({
+      success: false,
+      message: "table is empty!!!",
+    });
+  }
   await polls.findOne({
-      where: {
-          question:question,
-      }
+    where: {
+      question: question,
+    }
   })
-      .then(async(result) =>{
-          if(result == null){
-              const new_poll = await polls.create({
-                  username: username,
-                  question: question,
-                  startdate: startdate,
-                  expiredate: expiredate,
-                });
-   
-                  const idd = new_poll.id
-                  for(i in answer){
-                    await poll_answers.create({
-                      pollid: idd,
-                      answername: answer[i],
-                    })
-                  }
+    .then(async (result) => {
+      if (result == null) {
+        const new_poll = await polls.create({
+          username: username,
+          question: question,
+          startdate: startdate,
+          expiredate: expiredate,
+        });
+
+        const idd = new_poll.id
+        for (i in answer) {
+          await poll_answers.create({
+            pollid: idd,
+            answername: answer[i],
+          })
+        }
 
                     res.status(200).json({success:true, message:"added answer"});
                 
@@ -92,12 +92,12 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
   });
   exports.getPoll = asyncHandler(async (req, res, next) => {
     const idd = req.params.id;
-    const poggerz = await polls.findOne({
+    const poll = await polls.findOne({
       where: {
         id: idd,
       },
     });
-    if (poggerz) res.status(200).json(poggerz);
+    if (poll) res.status(200).json(poll);
     else res.status(400).json("Poll doesn't exist!");
   });
 
@@ -167,7 +167,7 @@ exports.adminUpdatePoll = asyncHandler(async (req, res, next) => {
   if (expiredate) {
     updatedPollData.expiredate = expiredate;
   }
-  
+
   await polls.update(updatedPollData, { where: { id: id } });
   res.status(200).json({ success: true, message: "Poll updated successfully" });
 });
@@ -225,3 +225,4 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
