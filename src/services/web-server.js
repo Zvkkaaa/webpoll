@@ -53,7 +53,21 @@ function initialize() {
 
 
   app.use("/public", express.static("public"));
-
+ // const API = require("./src/const/api/Api");
+  // //use api
+  // app.use(API.usersApi, usersRoute );
+  // app.use(API.loginApi, loginRoute );
+  // app.use(API.pollsApi, pollsRoute );
+  // app.use(API.poll_answerApi, poll_answerRoute );
+  // app.use(API.poll_attendanceApi, poll_attendanceRoute );
+  // app.use(API.commentsApi, commentsRoute );
+  
+  Users.sync()
+  Poll.sync()
+  Poll_Answer.sync()
+  Poll_Attendances.sync()
+  Comments.sync()
+  UserProfile.sync()
   app.listen(process.env.PORT, function () {
     console.log("Server is ready at" + process.env.PORT);
   });

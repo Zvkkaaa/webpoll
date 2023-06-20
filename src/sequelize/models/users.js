@@ -28,6 +28,12 @@ const Users = db.define(
       type: DataTypes.STRING,
       defaultValue: "User",
     },
+    mimetype:{
+      type:DataTypes.TEXT,
+    },
+    size:{
+      type:DataTypes.BIGINT
+    },
     createdAt: {
       type: DataTypes.DATE,
       get(){
