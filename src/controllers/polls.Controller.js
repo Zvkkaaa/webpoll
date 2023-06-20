@@ -92,12 +92,12 @@ exports.createPoll = asyncHandler(async (req,res,next) => {
   });
   exports.getPoll = asyncHandler(async (req, res, next) => {
     const idd = req.params.id;
-    const poll = await polls.findOne({
+    const poggerz = await polls.findOne({
       where: {
         id: idd,
       },
     });
-    if (poll) res.status(200).json(poll);
+    if (poggerz) res.status(200).json(poggerz);
     else res.status(400).json("Poll doesn't exist!");
   });
 
@@ -187,7 +187,6 @@ exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, message: "Poll deleted successfully" });
 });
 // pollsController.js
-
 exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
   const { question } = req.body;
   // Validate that the 'question' parameter is provided
