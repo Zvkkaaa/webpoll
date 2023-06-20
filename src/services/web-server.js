@@ -17,14 +17,14 @@ const pollsRoute = require('../routes/polls.Route');
 const poll_answerRoute = require('../routes/poll_answer.Route');
 const poll_attendanceRoute = require('../routes/poll_attendance.Route');
 const commentsRoute = require('../routes/comments.Route');
-
+const userProfileRoute = require('../routes/userProfile.Route');
 //db table add 
 const Users = require('../models/users')
 const Poll = require('../models/polls')
 const Poll_Answer =require('../models/poll_answer')
 const Poll_Attendances = require('../models/poll_attendance')
 const Comments = require('../models/comments')
-
+const UserProfile = require('../models/userProfile')
 // const scheduler = require("./scheduler"); // устгаж болохгүй!!!
 //uuganaaa
 function initialize() {
@@ -59,8 +59,8 @@ function initialize() {
   app.use('/answers', poll_answerRoute);
   app.use('/attendance', poll_attendanceRoute);
   app.use('/comment', commentsRoute);
-
-
+  app.use('/profile', userProfileRoute);
+  
   app.use("/public", express.static("public"));
  // const API = require("./src/const/api/Api");
   // //use api
@@ -76,7 +76,7 @@ function initialize() {
   Poll_Answer.sync()
   Poll_Attendances.sync()
   Comments.sync()
-
+  UserProfile.sync()
   app.listen(process.env.PORT, function () {
     console.log("Server is ready at" + process.env.PORT);
   });
