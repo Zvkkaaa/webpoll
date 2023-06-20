@@ -186,28 +186,43 @@ exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Poll deleted successfully" });
 });
-exports.getPollsBySearchingQuestion = asyncHandler(async (req,res,next)=>{
-  const {quest}= req.body;
-  if(!quest){
-    const searchingPolls = await polls.findAll({
-      [Op.like]: `%${quest}%`
+// pollsController.js
+
+exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
+  const { question } = req.body;
+  // Validate that the 'question' parameter is provided
+  if (!question) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing required query parameter: question'
     });
-    if(searchingPolls){
+  }
+
+  try {
+    const searchingPolls = await polls.findAll({
+      where: {
+        question: {
+          [Op.like]: `%${question}%`
+        }
+      }
+    });
+
+    if (searchingPolls.length > 0) {
       res.status(200).json({
         success: true,
         searchingPolls
       });
-    }else{
-      res.status(500).json({
-        success:false,
-        message:"Not found"
-      })
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'No polls found matching the search query'
+      });
     }
-  }else{
-    res.status(400).json({
-      success:false,
-      message:"Can't search empty!"
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to search for polls'
     });
-    return;
   }
-})
+});
