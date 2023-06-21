@@ -9,16 +9,16 @@ const path = require("path");
 const { raw } = require("body-parser");
 exports.createUser = asyncHandler(async (req, res, next) => {
   //Бүртгүүлэх хэсэг
-  const { username, email, password, birthdate } = req.body;
-
-  if (!username || !email || !password || !birthdate) {
+  const { username, email, password} = req.body;
+  console.log(username,email,password)
+  if (!username || !email || !password) {
     return res.status(400).json({
       success: false,
       message: "Талбар дутуу байна",
     });
   }
 
-  await users
+  await useыrs
     .findAll({
       where: {
         [Op.and]: [
@@ -43,7 +43,6 @@ exports.createUser = asyncHandler(async (req, res, next) => {
               username: username,
               email: email,
               password: encryptedPassword,
-              birthdate: birthdate,
               role: "User",
             },
             console.log("created new user")
@@ -74,9 +73,9 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 
 
 exports.registerUser = asyncHandler(async (req, res, next) => {
-  const { username, email, password, birthdate, role } = req.body;
+  const { username, email, password, role } = req.body;
 
-  if (!username || !email || !password || !birthdate || !role) {
+  if (!username || !email || !password || !role) {
     console.log("aldaa end bn");
     return res.status(400).json({
       success: false,
@@ -105,7 +104,6 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
       username: username,
       email: email,
       password: encryptedPassword,
-      birthdate: birthdate,
       role: role,
     });
     console.log("burtgetseeen");
@@ -166,7 +164,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 });
 exports.updateUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
-  const { email, username, password, birthdate, role } = req.body;
+  const { email, username, password, role } = req.body;
   
   const user = await users.findOne({ where: { id: id } });
   
@@ -183,9 +181,6 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     // if (password) {
     //   updatedUserData.password = password;
     // }
-    if (birthdate) {
-      updatedUserData.birthdate = birthdate;
-    }
     if (role) {
       updatedUserData.role = role;
     }

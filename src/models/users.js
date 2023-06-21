@@ -21,9 +21,6 @@ const Users = db.define(
     password: {
       type: DataTypes.STRING,
     },
-    birthdate: {
-      type: DataTypes.DATE,
-    },
     role: {
       type: DataTypes.STRING,
       defaultValue: "User",
