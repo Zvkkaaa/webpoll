@@ -5,29 +5,30 @@ const poll_attendance = require("../models/poll_attendance");
 const e = require("express");
 const poll_answers = require("../models/poll_answer");
 const polls = require("../models/polls");
-exports.getPollAttendance = async (req, res, next) => {
-    const pollid = req.params.id;
-    const answers = await poll_answers.findAll({
-      where: {
-        pollid:pollid,
-      }
-    });
-   console.log(answers);
-    let answerNums = [];
-    for (i in answers) {
-      let temp = 0;
-      let attendancy = await poll_attendance.findAll({
-        where: {
-          pollid: pollid,
-          answerid: answers[i].id,
-        },
-      });
-      temp = attendancy.length;
-      answerNums.push(temp);
+const moment = require('moment');
+exports.getPollAttendance = asyncHandler(async (req, res, next) => {
+  const pollid = req.params.id;
+  const answers = await poll_answers.findAll({
+    where: {
+      pollid:pollid,
     }
-    console.log("--------------"+answerNums+"------------");
-    res.status(200).json(answerNums);
-};
+  });
+ console.log(answers);
+  let answerNums = [];
+  for (i in answers) {
+    let temp = 0;
+    let attendancy = await poll_attendance.findAll({
+      where: {
+        pollid: pollid,
+        answerid: answers[i].id,
+      },
+    });
+    temp = attendancy.length;
+    answerNums.push(temp);
+  }
+  console.log("--------------"+answerNums+"------------");
+  res.status(200).json(answerNums);
+});
 exports.createPollAttendance = async (req,res,next) => {
   const pollid = req.params.id;
   const answerid = req.params.answerid;
@@ -61,40 +62,58 @@ exports.createPollAttendance = async (req,res,next) => {
     res.status(500).json("already submitted this poll!!!");
   }
 };
-exports.getResult = async (req, res, next) => {
-  const pollid = req.params.id;
-  const poll = await polls.findOne({
-    where: {
-      id:pollid,
+
+exports.getOwnAttendance = asyncHandler(async (req,res,next)=>{
+  const userid = req.userid;
+  const pollId = req.params.id;
+  const attend = await poll_attendance.findOne({
+    where:{
+      [Op.and]:[{userid:userid},{pollid:pollId}],
     }
   });
-  const answers = await poll_answers.findAll({
-    where: {
-      pollid:pollid,
-    }
-  });
-  let answerNums = [];
-  for (i in answers) {
-    let temp = 0;
-    let attendancy = await poll_attendance.findAll({
-      where: {
-        pollid: pollid,
-        answerid: answers[i].id,
-      },
+  if(attend){
+    res.status(200).json({
+      success:true,
+      attend
     });
-    temp = attendancy.length;
-    answerNums.push(temp);
+    return;
   }
-  let zzz =[];
-  for(i in answers.length){
-    const answer = answers[i].answername;
-    const count = answerNums[i];
-    zzz.push(answer,count);
+  else{
+    res.status(500).json({
+      success:false,
+      message:"Attendance not found"
+    })
   }
- let xxx = {
-  id,
-  question: poll.question,
-  result : zzz
- }
-  res.status(200).json(xxx);
-};
+});
+exports.updatePollAttendance = asyncHandler(async (req, res, next) => {
+  const userid = req.userid;
+  const pollId = req.params.id;
+  const answerid = req.params.answerid;
+
+  const previous = await poll_attendance.findOne({
+    where: {
+      [Op.and]: [{ userid: userid }, { pollid: pollId }]
+    }
+  });
+
+  if (previous) {
+    await poll_attendance.update(
+      { answerid: answerid || null },
+      {
+        where: {
+          [Op.and]: [{ userid: userid }, { pollid: pollId }]
+        }
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Choice updated"
+    });
+  } else {
+    res.status(404).json({
+      success: false,
+      message: "Not found"
+    });
+  }
+});
