@@ -225,4 +225,3 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
     });
   }
 });
-
