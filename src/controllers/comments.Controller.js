@@ -74,6 +74,7 @@ exports.getComments = asyncHandler(async (req, res, next) => {
     where: {
       pollid: idd,
     },
+    order:[["createdAt","DESC"]]
   });
   if (commentos) {
     res.status(200).json(commentos);
