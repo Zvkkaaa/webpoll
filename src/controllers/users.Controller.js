@@ -9,7 +9,7 @@ const path = require("path");
 const { raw } = require("body-parser");
 exports.createUser = asyncHandler(async (req, res, next) => {
   //Бүртгүүлэх хэсэг
-  const { username, email, password,password2} = req.body;
+  const { username, email, password} = req.body;
   console.log(username,email,password)
   if (!username || !email || !password) {
     return res.status(400).json({
@@ -17,12 +17,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
       message: "Талбар дутуу байна",
     });
   }
-  if(password !==password2){
-    return res.status(401).json({
-      success:false,
-      message:"Passwords don't match"
-    });
-  }
+
   await users
     .findAll({
       where: {
