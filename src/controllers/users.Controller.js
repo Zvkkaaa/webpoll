@@ -54,7 +54,6 @@ exports.createUser = asyncHandler(async (req, res, next) => {
               const email = result.email;
               const username = result.username;
               const userid = result.userid;
-              
               const token = jwt.sign(
                 {
                   email,
@@ -73,7 +72,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
               port: 465,
               secure: true,
               auth: {
-                user: proces.env.MY_GMAIL,
+                user: process.env.MY_GMAIL,
                 pass: process.env.MY_PASSWORD,
               },
             });
@@ -226,27 +225,26 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 });
 
 
- 
+
 
 exports.getUsername = asyncHandler(async (req, res, next) => {
-  console.log("jsdlfjsdlfkj");
-//   let transporter = nodemailer.createTransport({
-//     host: "smtp.gmail.com",
-//     port: 465,
-//     secure: true,
-//     auth: {
-//       user: "unuuthesupp123@gmail.com",
-//       pass: process.env.MY_PASSWORD,
-//     },
-//   });
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "unuuthesupp123@gmail.com",
+      pass: process.env.MY_PASSWORD,
+    },
+  });
 
-//   let info = await transporter.sendMail({
-//     from: 'unuuthesupp123@gmail.com',
-//     to: "zvkkaaa@gmail.com",
-//     subject: "nodemailer testing from uunu",
-//     html: `<h1>tejv crying so bad</h1>`,
-//   });
-//   console.log(info.messageId);
+  let info = await transporter.sendMail({
+    from: 'unuuthesupp123@gmail.com',
+    to: "zvkkaaa@gmail.com",
+    subject: "nodemailer testing from uunu",
+    html: `<h1>tejv crying so bad</h1>`,
+  });
+  console.log(info.messageId);
 });
 
 exports.deleteUser = asyncHandler(async (req, res, next) => {
