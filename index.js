@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 // Аппын тохиргоог process.env рүү ачаалах
 dotenv.config({ path: "./src/config/config.env" });
 
+const fileupload = require("express-fileupload");
 const webServer = require("./src/services/web-server");
 const database = require("./src/services/database");
 
@@ -27,7 +28,7 @@ async function startup() {
     process.exit(1);
   }
 }
-
+// fileupload();
 startup();
 
 async function shutdown(e) {

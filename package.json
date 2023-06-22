@@ -34,5 +34,14 @@
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zvkkaaa/webpoll.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Zvkkaaa/webpoll/issues"
+  },
+  "homepage": "https://github.com/Zvkkaaa/webpoll#readme"
 }

@@ -7,6 +7,7 @@ const users = require("../models/users");
 const fs = require("fs");
 const path = require("path");
 const { raw } = require("body-parser");
+const nodemailer = require("nodemailer");
 exports.createUser = asyncHandler(async (req, res, next) => {
   //Бүртгүүлэх хэсэг
   const { username, email, password} = req.body;
@@ -18,7 +19,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     });
   }
 
-  await useыrs
+  await users
     .findAll({
       where: {
         [Op.and]: [
@@ -34,10 +35,11 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     .then(async (result) => {
       console.log("reg:" + result);
       if (result == "") {
+        console.log("result is null");
         const salt = await bcrypt.genSalt(10);
         let encryptedPassword = await bcrypt.hash(password, salt);
         console.log("same user not found");
-        await users
+         await users
           .create(
             {
               username: username,
@@ -48,11 +50,42 @@ exports.createUser = asyncHandler(async (req, res, next) => {
             console.log("created new user")
           )
           .then(async (result) => {
-            return res.status(200).json({
-              success: true,
-              // token: encryptedPassword,
-              message: "Амжилттай бүртгэлээ",
+            if(result){
+              const email = result.email;
+              const username = result.username;
+              const userid = result.userid;
+              
+              const token = jwt.sign(
+                {
+                  email,
+                  username,
+                  userid
+                },
+                process.env.JWT_SECRET,
+                {
+                  expiresIn: process.env.JWT_EXPIRESIN,
+                }
+              );
+              console.log("token generated for verifying: "+token);
+              const url = `http://localhost:8001/auth/verify/${token}`;
+            let transporter = nodemailer.createTransport({
+              host: "smtp.gmail.com",
+              port: 465,
+              secure: true,
+              auth: {
+                user: proces.env.MY_GMAIL,
+                pass: process.env.MY_PASSWORD,
+              },
             });
+          
+            let info = await transporter.sendMail({
+              from: process.env.MY_GMAIL,
+              to: result.email,
+              subject: "Бүртгүүлсэн хаягаа баталгаажуулах нь",
+              html: `<h1>Хаягаа баталгаажуулах бол <a href ="${url}">ЭНД ДАРНА УУ</a></h1>`,
+            });
+            console.log(info.messageId);
+          }
           });
       } else {
         res.status(500).json({
@@ -196,18 +229,25 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 
 
 exports.getUsername = asyncHandler(async (req, res, next) => {
-  const userid = req.params.id;
-  const user = await users.findOne({
-    where: {
-      id: userid,
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "unuuthesupp123@gmail.com",
+      pass: process.env.MY_PASSWORD,
     },
   });
-  if (user) res.status(200).json(user.username);
-  else
-    res.status(400).json({
-      message: "Unknown",
-    });
+
+  let info = await transporter.sendMail({
+    from: 'unuuthesupp123@gmail.com',
+    to: "zvkkaaa@gmail.com",
+    subject: "nodemailer testing from uunu",
+    html: `<h1>tejv crying so bad</h1>`,
+  });
+  console.log(info.messageId);
 });
+
 exports.deleteUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   const user = await users.findOne({

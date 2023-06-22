@@ -14,12 +14,16 @@ const Users = db.define(
     username: {
       type: DataTypes.STRING,
     },
-
+    
     email: {
       type: DataTypes.STRING,
     },
     password: {
       type: DataTypes.STRING,
+    },
+    verified:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
     },
     role: {
       type: DataTypes.STRING,

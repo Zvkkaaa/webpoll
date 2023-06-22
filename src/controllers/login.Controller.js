@@ -21,6 +21,7 @@ exports.Login = asyncHandler(async (req, res, next) => {
   await Users.findOne({
     where: {
       email: email,
+      verified: true,
     },
   })
     .then((result) => {
@@ -169,4 +170,98 @@ exports.adminLogin = asyncHandler(async (req, res, next) => {
         message: "Серверийн алдаа",
       });
     });
+});
+
+
+// exports.verifyUser = asyncHandler(async(req,res,next)=>{
+//   const token = req.params.token;
+//   console.log("got token as params!!!");
+//   try {
+//     jwt.verify(token, process.env.JWT_SECRET);
+//     const decoded = jwt.decode(token, { complete: true });
+//     console.log("decoded successfully");
+//     userid = decoded.payload.userid;
+//     // req.login = decoded.payload.login;
+//     // req.company_id = decoded.payload.company_id;
+//     // req.is_type = decoded.payload.is_type;
+
+//     // req.check_lot_id = decoded.payload.check_lot_id;
+//     username = decoded.payload.username;
+//     email = decoded.payload.email;
+//     // // const connection_id = "odoo_undram";
+//     // // req.odoo_conn = odoo[connection_id];
+//     const user = await Users.findOne({
+//       where:{
+//         [Op.and]:[{email:email},{username:username}],
+//       }
+//     });
+//     console.log("found user info ---------"+user.username);
+//     if(user){await Users.update(
+//       {
+//       verify: true || null
+//     },{
+//       where:{
+//         [Op.and]:[{email:email},{username:username}],
+//       }
+//     }
+//     );
+//     console.log("verification successfully!!!");
+
+//   }
+
+//   } catch (err) {
+//     res.status(401).json({
+//       success: false,
+//       message: "Токен хүчингүй байна.",
+//       err,
+//     });
+//     return;
+//   }
+// });
+exports.verifyUser = asyncHandler(async (req, res, next) => {
+  const token = req.params.token;
+  console.log("got token as params!!!");
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.decode(token, { complete: true });
+    console.log("decoded successfully");
+    userid = decoded.payload.userid;
+    username = decoded.payload.username;
+    email = decoded.payload.email;
+
+    const user = await Users.findOne({
+      where: {
+        email: email,
+        username: username
+      }
+    });
+    console.log("found user info ---------" + user.verified);
+    if (user) {
+      await Users.update(
+        {
+          verified: true
+        },
+        {
+          where: {
+            email: email,
+            username: username
+          }
+        }
+      );
+      console.log("verification successful!!!");
+      // const url = `http://localhost:3000/auth/login`
+      res.status(200).json(
+        `Цахим хаягыг баталгаажуулсан тул уг цонхыг хааж болно`
+      );
+    }
+
+  } catch (err) {
+    res.status(401).json({
+      success: false,
+      message: "Токен хүчингүй байна.",
+      err,
+    });
+    return;
+  }
 });

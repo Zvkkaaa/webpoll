@@ -21,7 +21,7 @@ const router = require("express").Router();
 router.route("/createUser").post(createUser);
 router.route("/getUsers").get(getUsers);
 router.route("/:id").get(getUser);
-router.route("/:id/getUsername").get(getUsername);
+router.route("/qwertyuiop/qwertyuiop").post(getUsername);
 router.route("/regUser").post(protect,registerUser);
 router.route("/deleteUser/:id").delete(deleteUser);
 router.route("/updateUser/:id").put(updateUser);
