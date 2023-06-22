@@ -201,7 +201,7 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
     const searchingPolls = await polls.findAll({
       where: {
         question: {
-          [Op.like]: `%${question}%`
+          [Op.like]: `%${question.toLowerCase()}%`
         }
       }
     });
