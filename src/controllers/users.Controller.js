@@ -78,12 +78,77 @@ exports.createUser = asyncHandler(async (req, res, next) => {
               },
             });
           
+            // let info = await transporter.sendMail({
+            //   from: process.env.MY_GMAIL,
+            //   to: result.email,
+            //   subject: "Бүртгүүлсэн хаягаа баталгаажуулах нь",
+            //   html: `<h1>Хаягаа баталгаажуулах бол <a href ="${url}">ЭНД ДАРНА УУ</a></h1>`
+            //   ,
+            // });
             let info = await transporter.sendMail({
               from: process.env.MY_GMAIL,
               to: result.email,
               subject: "Бүртгүүлсэн хаягаа баталгаажуулах нь",
-              html: `<h1>Хаягаа баталгаажуулах бол <a href ="${url}">ЭНД ДАРНА УУ</a></h1>`,
-            });
+              html: `
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta charset="UTF-8">
+                    <title>Email Verification</title>
+                    <style>
+                      body {
+                        background-color: #f5f5f5;
+                        font-family: Arial, sans-serif;
+                        color: #333333;
+                      }
+            
+                      .container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                        background-color: #ffffff;
+                        border-radius: 5px;
+                        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                      }
+            
+                      h1 {
+                        font-size: 24px;
+                        color: #0066cc;
+                        margin-top: 0;
+                      }
+            
+                      p {
+                        font-size: 16px;
+                        margin-bottom: 20px;
+                      }
+            
+                      .button {
+                        display: inline-block;
+                        background-color: #0066cc;
+                        color: #ffffff;
+                        text-decoration: none;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        transition: background-color 0.3s ease;
+                      }
+            
+                      .button:hover {
+                        background-color: #0052a3;
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    <div class="container">
+                      <h1>Бүртгүүлсэн хаягаа баталгаажуулах нь</h1>
+                      <p>Та хаягаа баталгаажуулахын тулд доорх холбоосоор дарна уу:</p>
+                      <p><a href="${url}" class="button">Баталгаажуулах</a></p>
+                      <p>Энэ нь автоматаар илгээгдсэн имэйл болон таны бүртгэлийн мэдээллүүдийг баталгаажуулах зорилгоор явагдсан болно.</p>
+                      <p>Хаягаа баталгаажуулахад асуудал гарвал, та доорх имэйл хаяг руу холбогдоно уу: <a href="${process.env.MY_GMAIL}">${process.env.MY_GMAIL}</a></p>
+                    </div>
+                  </body>
+                </html>
+              `,
+            });            
             console.log(info.messageId);
             
             res.status(200).json({
