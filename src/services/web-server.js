@@ -52,6 +52,13 @@ function initialize() {
   );
   app.use(cors());
   app.use(express.json());
+  
+  const loginRoute = require('../routes/login.Route');
+  const usersRoute = require('../routes/users.Route');
+  const pollsRoute = require('../routes/polls.Route');
+  const poll_answerRoute = require('../routes/poll_answer.Route');
+  const poll_attendanceRoute = require('../routes/poll_attendance.Route');
+  const commentsRoute = require('../routes/comments.Route');
 
   app.use('/auth', loginRoute);
   app.use('/user', usersRoute);
