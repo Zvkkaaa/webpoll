@@ -77,3 +77,25 @@ exports.displayImage = asyncHandler(async(req,res,next)=>{
   else res.status(404); 
   
 });
+
+exports.deleteProfile = asyncHandler(async(req,res,next)=>{
+  const userid = req.userid;  
+  const profile = await uploads.findOne({
+    where:{
+      userid:userid,
+    }
+  });
+  if(profile){
+    //write function to remove that profile
+    await uploads.destroy({ where: { userid: userid } });
+    res.status(200).json({
+      success:false,
+      message: "Profile image has been deleted"
+    })
+  }
+  else res.status(404).json("No such image found");
+});
+
+exports.updateProfile = asyncHandler(async(req,res,next)=>{
+  const userid = req.userid;
+});
