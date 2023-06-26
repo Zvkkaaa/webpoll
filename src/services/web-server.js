@@ -17,14 +17,13 @@ const pollsRoute = require('../routes/polls.Route');
 const poll_answerRoute = require('../routes/poll_answer.Route');
 const poll_attendanceRoute = require('../routes/poll_attendance.Route');
 const commentsRoute = require('../routes/comments.Route');
-
 //db table add 
 const Users = require('../models/users')
 const Poll = require('../models/polls')
 const Poll_Answer =require('../models/poll_answer')
 const Poll_Attendances = require('../models/poll_attendance')
 const Comments = require('../models/comments')
-
+const Upload = require('../models/upload');
 // const scheduler = require("./scheduler"); // устгаж болохгүй!!!
 //uuganaaa
 function initialize() {
@@ -59,6 +58,7 @@ function initialize() {
   const poll_answerRoute = require('../routes/poll_answer.Route');
   const poll_attendanceRoute = require('../routes/poll_attendance.Route');
   const commentsRoute = require('../routes/comments.Route');
+  const uploadRoute = require('../routes/upload.Route');
 
   app.use('/auth', loginRoute);
   app.use('/user', usersRoute);
@@ -66,7 +66,7 @@ function initialize() {
   app.use('/answers', poll_answerRoute);
   app.use('/attendance', poll_attendanceRoute);
   app.use('/comment', commentsRoute);
-
+  app.use('/image',uploadRoute );
 
   app.use("/public", express.static("public"));
  // const API = require("./src/const/api/Api");
@@ -83,7 +83,7 @@ function initialize() {
   Poll_Answer.sync()
   Poll_Attendances.sync()
   Comments.sync()
-
+  Upload.sync()
   app.listen(process.env.PORT, function () {
     console.log("Server is ready at" + process.env.PORT);
   });
