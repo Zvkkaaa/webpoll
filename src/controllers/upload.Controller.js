@@ -62,5 +62,18 @@ exports.uploadProfile = [upload.single('image'), asyncHandler(async (req, res, n
   });
 })];
 exports.displayImage = asyncHandler(async(req,res,next)=>{
-
+  const userid = req.params.userid;
+  let patho
+  const imageInfo = await uploads.findOne({
+    where:{
+      userid:userid,
+    }
+  });
+  patho = imageInfo.path;
+  console.log(patho);
+  if(patho){
+    return res.status(200).json(patho);
+  }
+  else res.status(404); 
+  
 });

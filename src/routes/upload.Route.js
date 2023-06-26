@@ -4,5 +4,5 @@ const { protect } = require("../middleware/protect");
 
 
 router.route("/uploadImage").post(protect,uploadProfile);
-router.route("/:id/displayImage").get(displayImage);
+router.route("/displayImage/:userid").get(displayImage);
 module.exports = router;
