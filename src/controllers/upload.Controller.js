@@ -1,9 +1,9 @@
 const asyncHandler = require("../middleware/asyncHandler");
 const multer = require("multer");
 const e = require("express");
-const img = require("../models/upload");
+// const img = require("../models/upload");
 const path = require('path');
-
+const users = require('../models/users');
 // Set up multer middleware
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
@@ -152,3 +152,33 @@ exports.updateProfile = [upload.single('image'), asyncHandler(async (req, res, n
     return res.status(500).json(err);
   });
 })];
+
+exports.displayWithUsername = asyncHandler(async (req, res, next) => {
+  const username = req.params.username;
+  console.log("---------------"+username+"---------------");
+
+  const user = await users.findOne({
+    where: {
+      username:username
+    },
+  });
+  if(!user) {return res.status(404).json({
+    success:false,
+    message:"Not found"
+  })}
+  let userid = user.id;
+  const imageInfo = await uploads.findOne({
+    where:{
+      userid:userid
+    }
+  });
+  let patho = imageInfo.path;
+  console.log(patho);
+  if (patho) {
+    console.log('Image URL:', patho);
+    res.sendFile(patho); // Serve the image file directly
+  } else {
+    return res.status(404).json({ error: 'Image not found' });
+  }
+});
+
