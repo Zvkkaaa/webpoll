@@ -3,6 +3,7 @@ const http = require("http");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const path = require('path');
 const app = express();
 const port = process.env.PORT;
 
@@ -60,6 +61,7 @@ function initialize() {
   const commentsRoute = require('../routes/comments.Route');
   const uploadRoute = require('../routes/upload.Route');
 
+
   app.use('/auth', loginRoute);
   app.use('/user', usersRoute);
   app.use('/poll', pollsRoute);
@@ -67,6 +69,12 @@ function initialize() {
   app.use('/attendance', poll_attendanceRoute);
   app.use('/comment', commentsRoute);
   app.use('/image',uploadRoute );
+  app.use('/uploads', express.static(path.join(__dirname, '../src/upload'))); // Serve static files from the 'src/upload' folder
+
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../src/upload/index.html'));
+  });
+  
 
   app.use("/public", express.static("public"));
  // const API = require("./src/const/api/Api");

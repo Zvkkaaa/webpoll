@@ -2,11 +2,12 @@ const asyncHandler = require("../middleware/asyncHandler");
 const multer = require("multer");
 const e = require("express");
 const img = require("../models/upload");
+const path = require('path');
 
 // Set up multer middleware
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
-    callback(null, 'C:/Users/MGL/Desktop/webpoll/src/upload');
+    callback(null, 'C:/Users/USER/Desktop/dadlaga/webpoll/src/upload');
   },
   filename: function(req, file, callback) {
     callback(null, file.originalname);
@@ -43,8 +44,7 @@ exports.uploadProfile = [upload.single('image'), asyncHandler(async (req, res, n
   if (!req.file) {
     return res.status(500).json('No file provided');
   }
-
-  const userid = req.userid;
+const userid = req.userid;
   const { filename, path, size, mimetype } = req.file;
 
   await uploads.create({
@@ -61,21 +61,47 @@ exports.uploadProfile = [upload.single('image'), asyncHandler(async (req, res, n
     return res.status(500).json(err);
   });
 })];
-exports.displayImage = asyncHandler(async(req,res,next)=>{
-  const userid = req.params.userid;
-  let patho
+
+exports.registerUploadProfile = [upload.single('image'), asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file provided' });
+  }
+
+  const { filename, path, size, mimetype } = req.file;
+  const userId = req.params.userid; // Get the userId from the route parameter
+
+  try {
+    await uploads.create({
+      userid: userId,
+      filename,
+      path,
+      size,
+      mimetype,
+    });
+    
+    return res.status(200).json({ success: true, message: 'File uploaded' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to upload file' });
+  }
+})];
+
+exports.displayImage = asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId;
+  console.log('User ID:', userId);
+  let patho;
   const imageInfo = await uploads.findOne({
-    where:{
-      userid:userid,
-    }
+    where: {
+      userid: userId,
+    },
   });
   patho = imageInfo.path;
   console.log(patho);
-  if(patho){
-    return res.status(200).json(patho);
+  if (patho) {
+    console.log('Image URL:', patho);
+    res.sendFile(patho); // Serve the image file directly
+  } else {
+    return res.status(404).json({ error: 'Image not found' });
   }
-  else res.status(404); 
-  
 });
 
 //it does just remove tuple from db not delete image from upload folder in src
