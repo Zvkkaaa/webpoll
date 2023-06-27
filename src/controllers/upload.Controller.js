@@ -63,12 +63,9 @@ const userid = req.userid;
 })];
 
 exports.registerUploadProfile = [upload.single('image'), asyncHandler(async (req, res, next) => {
-  if (!req.file) {
-    return res.status(400).json({ success: false, message: 'No file provided' });
-  }
-
+  // File upload case, continue with the existing logic
   const { filename, path, size, mimetype } = req.file;
-  const userId = req.params.userid; // Get the userId from the route parameter
+  const userId = req.params.userid;
 
   try {
     await uploads.create({
@@ -78,12 +75,34 @@ exports.registerUploadProfile = [upload.single('image'), asyncHandler(async (req
       size,
       mimetype,
     });
-    
+
     return res.status(200).json({ success: true, message: 'File uploaded' });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to upload file' });
   }
 })];
+
+exports.setDefaultProfilePicture = asyncHandler(async (req, res, next) => {
+  const { userid } = req.params;
+
+  try {
+    // Create a new entry in the uploads table with the default profile picture
+    await uploads.create({
+      userid: userid,
+      filename: 'default.png',
+      path: path.join(__dirname, '..', 'upload', 'default.png'),
+    });
+
+    return res.status(200).json({ success: true, message: 'Default profile picture set' });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Failed to set default profile picture' });
+  }
+});
+
+
 
 exports.displayImage = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
