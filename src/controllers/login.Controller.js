@@ -252,7 +252,7 @@ exports.verifyUser = asyncHandler(async (req, res, next) => {
       console.log("verification successful!!!");
       // const url = `http://localhost:3000/auth/login`
       res.status(200).json(
-        `Цахим хаягыг баталгаажуулсан тул уг цонхыг хааж болно`
+        `Цахим хаягыг баталгаажуулсан тул уг ц  онхыг хааж болно`
       );
     }
 

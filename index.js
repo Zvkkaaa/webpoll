@@ -4,16 +4,20 @@
  * Created at:
  */
 const dotenv = require("dotenv");
-// Аппын тохиргоог process.env рүү ачаалах
 dotenv.config({ path: "./src/config/config.env" });
 
+const express = require('express');
+const app = express();
+const path = require('path');
 const fileupload = require("express-fileupload");
 const webServer = require("./src/services/web-server");
 const database = require("./src/services/database");
 
+app.use('/upload', express.static('src/upload'));
+
 async function startup() {
   try {
-    await webServer.initialize();
+    await webServer.initialize(app);
     console.log("Вэб серверийг амжилттай асаалаа...");
   } catch (err) {
     console.error(err);
@@ -28,7 +32,7 @@ async function startup() {
     process.exit(1);
   }
 }
-// fileupload();
+
 startup();
 
 async function shutdown(e) {
