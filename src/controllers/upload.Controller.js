@@ -78,6 +78,7 @@ exports.displayImage = asyncHandler(async(req,res,next)=>{
   
 });
 
+//it does just remove tuple from db not delete image from upload folder in src
 exports.deleteProfile = asyncHandler(async(req,res,next)=>{
   const userid = req.userid;  
   const profile = await uploads.findOne({
@@ -89,13 +90,39 @@ exports.deleteProfile = asyncHandler(async(req,res,next)=>{
     //write function to remove that profile
     await uploads.destroy({ where: { userid: userid } });
     res.status(200).json({
-      success:false,
+      success:true,
       message: "Profile image has been deleted"
     })
   }
   else res.status(404).json("No such image found");
 });
 
-exports.updateProfile = asyncHandler(async(req,res,next)=>{
+//it does updates tuple from db and upload image into /src/upload
+exports.updateProfile = [upload.single('image'), asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return res.status(500).json('No file provided');
+  }
+
   const userid = req.userid;
-});
+  const { filename, path, size, mimetype } = req.file;
+  const previous = await uploads.findOne({
+    where:{userid:userid}
+  });
+  if(!previous)   return next(new ErrorResponse("Poll not found", 404));
+  
+  const updatedProfileInfo = {};
+
+  if (req.file) {
+    updatedProfileInfo.filename = filename;
+    updatedProfileInfo.path = path;
+    updatedProfileInfo.size= size;
+    updatedProfileInfo.mimetype= mimetype;
+  }
+  await uploads.update(updatedProfileInfo, { where: { userid: userid } })
+  .then((result) => {
+    return res.status(200).json("Updated profile");
+  })
+  .catch((err) => {
+    return res.status(500).json(err);
+  });
+})];

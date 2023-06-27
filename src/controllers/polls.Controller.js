@@ -225,3 +225,18 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
     });
   }
 });
+//use this for my-poll button
+exports.myPolls = asyncHandler(async(req,res,next)=>{
+  const username = req.username;
+  const myPollz = await polls.findAll({
+    where:{username:username}
+  });
+  if(!myPollz) return res.status(404).json({
+    success:false,
+    message:"Not found"
+  });
+  return res.status(200).json({
+    success:true,
+    myPollz
+  });
+});
