@@ -265,3 +265,64 @@ exports.verifyUser = asyncHandler(async (req, res, next) => {
     return;
   }
 });
+exports.changePassword= asyncHandler(async (req, res, next) => {
+  const { oldPass, newPass, newPass2} = req.body;
+  const email = req.email;
+  if(newPass !==newPass2) {
+    return res.status(400).json({
+      success:false,
+      message:"Passwords not match"
+    });
+  }
+  await Users.findOne({
+    where: {
+      email: email,
+      verified: true,
+    },
+  })
+    .then((result) => {
+      //console.log("******", result);
+      if (result == null) {
+        res.status(500).json({
+          success: false,
+          message: "Бүртгэлгүй байна",
+        });
+        return;
+      }
+      const oldPassword = result.password;
+
+      bcrypt.compare(oldPass, oldPassword).then(async (result) => {
+        if (result == true) {
+          //end shine pass davslah yostoi
+          const salt = await bcrypt.genSalt(10);
+          const encryptedPassword = await bcrypt.hash(newPass, salt);
+      
+          let changePass ={};
+        changePass.password = encryptedPassword;
+          await Users.update(changePass, { where: { id: result.id } });
+          
+          //  const token = userController.generateJwt(userid, roleid);
+          res.status(200).json({
+            success: true,
+            message: "Changed password",
+            token,
+          });
+          return;
+        } else {
+          res.status(400).json({
+            success: false,
+            message: "Old password is wrong",
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      // console.log(err)
+      // logger.error("Алдаа гарлаа: " + err);
+      return res.status(500).json({
+        success: false,
+        message: "Серверийн алдаа",
+      });
+    });
+});
+
