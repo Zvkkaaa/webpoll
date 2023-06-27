@@ -27,4 +27,5 @@ router.route("/regUser").post(protect,registerUser);
 router.route("/deleteUser/:id").delete(deleteUser);
 router.route("/updateUser/:id").put(updateUser);
 router.route("/checkVerification").post(checkVerification);
+
 module.exports = router;

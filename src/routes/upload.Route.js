@@ -10,6 +10,6 @@ router.route("/uploadImage").post(uploadProfile);
 router.route("/registerUploadImage/:userid").post(registerUploadProfile);
 router.route("/displayImage/:userId").get(displayImage);
 router.route("/deleteImage").delete(protect,deleteProfile);
-router.route("/updateImage").put(protect,updateProfile);
+router.route("/updateImage").put(protect,updateProfile);  //should be in protect
 router.route("/setDefaultProfilePicture/:userid").post(setDefaultProfilePicture);
 module.exports = router;

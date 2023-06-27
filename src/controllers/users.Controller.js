@@ -257,6 +257,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
     user
   });
 });
+
 exports.updateUser = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   const { email, username, password, role } = req.body;
