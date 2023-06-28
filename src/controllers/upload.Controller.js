@@ -7,7 +7,7 @@ const users = require('../models/users');
 // Set up multer middleware
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
-    callback(null, 'C:/Users/USER/Desktop/dadlaga/webpoll/src/upload');
+    callback(null, process.env.UPLOAD_PATH);
   },
   filename: function(req, file, callback) {
     callback(null, file.originalname);
