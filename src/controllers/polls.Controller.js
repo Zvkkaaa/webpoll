@@ -237,7 +237,7 @@ exports.myPolls = asyncHandler(async(req,res,next)=>{
     success:false,
     message:"Not found"
   });
-  return res.status(200).json({
+   return res.status(200).json({
     success:true,
     myPollz
   });
