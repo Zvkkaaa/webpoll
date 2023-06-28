@@ -4,6 +4,7 @@ const { Op, QueryTypes, Sequelize } = require("sequelize");
 const e = require("express");
 const polls = require("../models/polls");
 const poll_answers = require("../models/poll_answer");
+const { start } = require("init");
 // exports.createPoll = asyncHandler(async (req, res, next) => {
 //   const { question, startdate, expiredate} = req.body;
 //   //const { userid } = req.param;
@@ -104,19 +105,23 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
 
 exports.deletePoll = asyncHandler(async (req, res, next) => {
   try {
-    const { id, userid } = req.params;
+    const { id } = req.params.id;
+    const username = req.username;
     const poll = await polls.findOne({
       where: {
         id: id,
-        userid: userid,
+        username:username,
       },
     });
     if (poll) {
-      if (poll.userid + "" !== "" + userid + "")
+      if (poll.username !== username)
         throw new Error("You cant delete that poll, because you not owner");
       else {
-        polls.splice(index, 1);
-        await poll.remove();
+        await polls.destroy({
+          where: {
+            id: id,
+          },
+        });
         res.status(200).json("poll deleted!");
       }
     } else {
@@ -127,20 +132,29 @@ exports.deletePoll = asyncHandler(async (req, res, next) => {
   }
 });
 exports.updatePoll = asyncHandler(async (req, res, next) => {
-  const { pollid } = req.params;
-  const { user } = req.user;
+  const { id } = req.params;
+  const { username } = req.username;
   const { question, startdate, expiredate } = req.body;
-  const poll = await polls.findById(pollid);
-  if (poll) {
-    if (poll.userid + "" == "" + user.id) {
-      poll.question = question ? question : undefined;
-      poll.startdate = startdate ? startdate : undefined;
-      poll.expiredate = expiredate ? expiredate : undefined;
-      poll.save();
-      res.status(200).json("Poll updated succesfully");
-    } else {
-      res.status(200).json("Can't edit because you're not the owner");
+  const poll = await polls.findOne({
+    where:{
+      [Op.and]:[{username:username},{id:id}]
     }
+  });
+  if (poll) {
+    const updatedInfo = {};
+    if(question){
+      updatedInfo.question=question;
+    }
+    if(startdate){
+      updatedInfo.startdate=startdate;
+    }
+    if(expiredate){
+      updatedInfo.expiredate=expiredate;
+    }
+    await polls.update(updatedInfo, { where: { id:id } })
+    .then((result) => {
+      return res.status(200).json("Updated profile");
+    });
   } else {
     res.status(200).json("Poll doesn't exist!");
   }
