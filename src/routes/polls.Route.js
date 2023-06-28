@@ -9,7 +9,7 @@ const router = require("express").Router();
 
 router.route("/createPoll").post(protect,createPoll);
 router.route("/list").get(getPolls);
-router.route("/:id").get(getPoll);
+router.route("/getPoll/:id").get(getPoll);
 router.route("/updatePoll/:id").put(updatePoll);
 router.route("/:id/deletePoll").delete(deletePoll);
 router.route("/adminUpdatePoll/:id").put(adminUpdatePoll);
