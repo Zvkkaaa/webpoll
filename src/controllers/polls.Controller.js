@@ -104,40 +104,28 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
 
 
 exports.deletePoll = asyncHandler(async (req, res, next) => {
-  try {
-    const { id } = req.params.id;
-    const username = req.username;
+    const { id } = req.params;
+    //console.log("--------------"+pollid);
     const poll = await polls.findOne({
       where: {
-        id: id,
-        username:username,
-      },
+        id:id,
+      }
     });
-    if (poll) {
-      if (poll.username !== username)
-        throw new Error("You cant delete that poll, because you not owner");
-      else {
+    if (poll) 
         await polls.destroy({
           where: {
             id: id,
           },
         });
         res.status(200).json("poll deleted!");
-      }
-    } else {
-      res.status(200).json("poll doesn't exist");
-    }
-  } catch (e) {
-    res.status(400).json({ error: e.message });
-  }
 });
 exports.updatePoll = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { username } = req.username;
   const { question, startdate, expiredate } = req.body;
+  console.log(id, username, question);
   const poll = await polls.findOne({
     where:{
-      [Op.and]:[{username:username},{id:id}]
+      id:id,
     }
   });
   if (poll) {
