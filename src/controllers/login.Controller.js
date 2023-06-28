@@ -268,6 +268,7 @@ exports.verifyUser = asyncHandler(async (req, res, next) => {
 exports.changePassword= asyncHandler(async (req, res, next) => {
   const { oldPass, newPass, newPass2} = req.body;
   const email = req.email;
+  console.log(email, oldPass, newPass, newPass2);
   if(newPass !==newPass2) {
     return res.status(400).json({
       success:false,
@@ -282,6 +283,7 @@ exports.changePassword= asyncHandler(async (req, res, next) => {
   })
     .then((result) => {
       //console.log("******", result);
+      console.log("found result: "+result.username);
       if (result == null) {
         res.status(500).json({
           success: false,
@@ -290,22 +292,20 @@ exports.changePassword= asyncHandler(async (req, res, next) => {
         return;
       }
       const oldPassword = result.password;
-
+      const id = result.id;
       bcrypt.compare(oldPass, oldPassword).then(async (result) => {
         if (result == true) {
+          console.log("old password matched");
           //end shine pass davslah yostoi
           const salt = await bcrypt.genSalt(10);
           const encryptedPassword = await bcrypt.hash(newPass, salt);
-      
           let changePass ={};
         changePass.password = encryptedPassword;
-          await Users.update(changePass, { where: { id: result.id } });
-          
-          //  const token = userController.generateJwt(userid, roleid);
+        console.log("updating password")
+          await Users.update(changePass, { where: { id:id } });
           res.status(200).json({
             success: true,
             message: "Changed password",
-            token,
           });
           return;
         } else {
@@ -315,14 +315,7 @@ exports.changePassword= asyncHandler(async (req, res, next) => {
           });
         }
       });
-    })
-    .catch((err) => {
-      // console.log(err)
-      // logger.error("Алдаа гарлаа: " + err);
-      return res.status(500).json({
-        success: false,
-        message: "Серверийн алдаа",
-      });
     });
+
 });
 
