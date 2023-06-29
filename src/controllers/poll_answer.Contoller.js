@@ -35,9 +35,9 @@ exports.getPoll = asyncHandler(async (req, res, next) => {
   }
 });*/
 exports.createPollAnswer = asyncHandler(async(req,res,next)=>{
-  const {pollid} = req.params;
+  const pollid = req.params.id;
   const {answer} = req.body;
-  const {userid} = req.userid;
+  const  userid= req.userid;
   console.log("--------------------"+pollid, answer, userid)
   if(!answer) return res.status(400).json({
     success:false,
