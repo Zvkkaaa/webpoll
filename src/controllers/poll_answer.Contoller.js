@@ -3,6 +3,7 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
 const e = require("express");
 const poll_answers = require("../models/poll_answer");
+const attendance = require('../models/poll_attendance');
 exports.getPollAnswers = asyncHandler(async (req, res, next) => {
   const idd = req.params.id; // Assuming the parameter name is "id"
   // Assuming "polls" is your Sequelize model
@@ -33,19 +34,41 @@ exports.getPoll = asyncHandler(async (req, res, next) => {
     res.status(400).json("Poll doesn't exist!");
   }
 });*/
-exports.createPollAnswers = asyncHandler(async(req,res,next)=>{
+exports.createPollAnswer = asyncHandler(async(req,res,next)=>{
   const {pollid} = req.params;
-  const {answers} = req.body;
-  for(i in answers){
-   await poll_answers.create({
+  const {answer} = req.body;
+  const {userid} = req.userid;
+  console.log("--------------------"+pollid, answer, userid)
+  if(!answer) return res.status(400).json({
+    success:false,
+    message:"input is empty"
+  });
+  if(!pollid) return res.status(400).json({
+    success:false,
+    message:"poll not found"
+  });
+   const result = await poll_answers.create({
     pollid:pollid,
-    answername: answers[i],
-    }).then(async(result)=>{
-      res.status(200).json("added poll answer!");
-    }).catch((err)=>{
-      res.status(err).json(err);
-    });
-  }
+    answername:answer});
+      console.log("created pollAnswer: "+result.answername);
+      const choice = result.id;
+      if(!pollid || !userid|| !choice){
+        return res.status(403).json({
+          success:false,
+          message:"Forbidden to attend"
+        });
+      }
+      const attend = await attendance.create({
+        pollid:pollid,
+        userid:userid,
+        answerid:choice
+      });
+      console.log(attend);
+    res.status(200).json({
+      success:true,
+      message:"Added answer and attendance"
+    })
+
 });
 exports.getAnswernames = asyncHandler(async(req,res,next)=>{
   const pollid = req.params.id;

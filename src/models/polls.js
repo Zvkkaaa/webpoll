@@ -16,7 +16,12 @@
       question: {
         type: DataTypes.STRING,
       },
-
+      type:{
+        type: DataTypes.STRING,
+      },
+      visibility:{
+        type: DataTypes.BOOLEAN,
+      },
       startdate: {
         type: DataTypes.DATE,
       },

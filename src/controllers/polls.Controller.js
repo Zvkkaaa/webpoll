@@ -45,46 +45,60 @@ const { start } = require("init");
 // });
 
 exports.createPoll = asyncHandler(async (req, res, next) => {
-  const { question, startdate, expiredate, answer } = req.body
+  const { question, startdate, expiredate, answer,type,visibility } = req.body
   const username = req.username
-  if (!question || !startdate || !expiredate || !answer) {
+  if (!question || !startdate || !expiredate || !type || !visibility) {
     return res.status(400).json({
       success: false,
       message: "table is empty!!!",
     });
   }
-  await polls.findOne({
-    where: {
-      question: question,
+  const duplicate = await polls.findOne({
+    where:{
+      question:question,
+      type:type,
+      visibility:visibility
     }
-  })
-    .then(async (result) => {
-      if (result == null) {
+  });
+  if(duplicate){
+    return res.status(200).json({
+      success:false,
+      message:"Can't create same poll again"
+    });
+  }
         const new_poll = await polls.create({
           username: username,
           question: question,
           startdate: startdate,
           expiredate: expiredate,
+          type:type,
+          visibility:visibility,
         });
-
-        const idd = new_poll.id
+    if(new_poll.type == "opinion"){
+      return res.status(200).json({
+        success:true,
+        message:"Created poll with opinion"
+      });
+    }
+      if(answer){
+          const idd = new_poll.id
         for (i in answer) {
           await poll_answers.create({
             pollid: idd,
             answername: answer[i],
           })
         }
+    res.status(200).json({success:true, message:"created poll with answers/ more like original"});      
+        }
 
-                    res.status(200).json({success:true, message:"added answer"});
-                
-            }else{
-                res.status(500).json({
-                    success: false, 
-                    message: "service fault",
-                });
-            }
-        });
+
     });
+
+  // exports.createOpinionPoll = asyncHandler(async(req,res,next)=>{
+  //   const username = req.username;
+  //   const { question, startdate, expiredate, answer,type,visibility } = req.body
+    
+  // });
   //getAllpolls
   exports.getPolls = asyncHandler(async (req, res, next) => {
     const pollers = await polls.findAll({
