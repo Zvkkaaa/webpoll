@@ -87,7 +87,10 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
     });
   //getAllpolls
   exports.getPolls = asyncHandler(async (req, res, next) => {
-    const pollers = await polls.findAll();
+    const pollers = await polls.findAll({
+      order:[["startdate","DESC"]]
+  
+    });
     if (pollers) res.status(200).json(pollers);
     else res.status(400).json({ error: error.message });
   });
@@ -119,10 +122,11 @@ exports.deletePoll = asyncHandler(async (req, res, next) => {
         });
         res.status(200).json("poll deleted!");
 });
+
 exports.updatePoll = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { question, startdate, expiredate } = req.body;
-  console.log(id, username, question);
+ // console.log(id, username, question);
   const poll = await polls.findOne({
     where:{
       id:id,
@@ -188,7 +192,7 @@ exports.adminDeletePoll = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: "Poll deleted successfully" });
 });
-// pollsController.js
+
 exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
   const { question } = req.query;
   // Validate that the 'question' parameter is provided
@@ -201,11 +205,11 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
 
   try {
     const searchingPolls = await polls.findAll({
-      where: {
-        question: {
-          [Op.like]: `%${question.toLowerCase()}%`
-        }
-      }
+      where: Sequelize.where(
+        Sequelize.fn('LOWER', Sequelize.col('question')),
+        'LIKE',
+        `%${question.toLowerCase()}%`
+      )
     });
 
     if (searchingPolls.length > 0) {
@@ -214,7 +218,7 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
         searchingPolls
       });
     } else {
-      res.status(404).json({
+      res.status(404).json({  
         success: false,
         message: 'No polls found matching the search query'
       });
@@ -227,18 +231,21 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
 //use this for my-poll button
-exports.myPolls = asyncHandler(async(req,res,next)=>{
+exports.myPolls = asyncHandler(async (req, res, next) => {
   const username = req.username;
-  const myPollz = await polls.findAll({
-    where:{username:username}
+  const myPolls = await polls.findAll({
+    where: { username: username }
   });
-  if(!myPollz) return res.status(404).json({
-    success:false,
-    message:"Not found"
-  });
-   return res.status(200).json({
-    success:true,
-    myPollz
+  if (!myPolls) {
+    return res.status(404).json({
+      success: false,
+      message: "Not found"
+    });
+  }
+  res.status(200).json({
+    success: true,
+    polls: myPolls 
   });
 });
