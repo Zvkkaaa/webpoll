@@ -142,6 +142,7 @@ exports.deleteProfile = asyncHandler(async(req,res,next)=>{
   else res.status(404).json("No such image found");
 });
 
+
 //it does updates tuple from db and upload image into /src/upload
 exports.updateProfile = [upload.single('image'), asyncHandler(async (req, res, next) => {
   if (!req.file) {
@@ -171,6 +172,31 @@ exports.updateProfile = [upload.single('image'), asyncHandler(async (req, res, n
     return res.status(500).json(err);
   });
 })];
+
+exports.getOwnProfile = asyncHandler(async (req, res, next) => {
+  const username = req.params.username;
+  const user = await users.findOne({
+    where: {
+      username: username
+    },
+  });
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found"
+    });
+  }
+  const imageInfo = await uploads.findOne({
+    where: {
+      userid: user.id
+    }
+  });
+  if (!imageInfo || !imageInfo.path) {
+    return res.status(404).json({ error: 'Image not found' });
+  }
+  res.sendFile(imageInfo.path);
+});
+
 
 exports.displayWithUsername = asyncHandler(async (req, res, next) => {
   const username = req.params.username;
