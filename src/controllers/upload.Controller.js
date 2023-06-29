@@ -195,6 +195,7 @@ exports.getOwnProfile = asyncHandler(async (req, res, next) => {
     return res.status(404).json({ error: 'Image not found' });
   }
   res.sendFile(imageInfo.path);
+  //kekw
 });
 
 
