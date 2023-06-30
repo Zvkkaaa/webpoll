@@ -32,44 +32,43 @@ exports.getPollAttendance = asyncHandler(async (req, res, next) => {
 });
 //сонголт хийсэн хүмүүсийн нэрсийг харуулах
 //triple go brrrrr
-exports.getOpinionAttendance = asyncHandler(async (req, res, next) => {
-  const pollid = req.params.id;
-  const answers = await poll_answers.findAll({
-    where: {
-      pollid:pollid,
-    }
-  });
- //console.log(answers);
-  const userList = [];
-  for (i in answers) {
-    const some =answers[i].id;
-    const names =[];
-    const attendancy = await poll_attendance.findAll({
-      where: {
-        pollid: pollid,
-        answerid: some,
-      },
-    });
-    //console.log(attendancy.userid);
-    for(j in attendancy){
-      console.log("------------"+attendancy[j].userid)
-      const thing = attendancy[j].userid;
-      const user = await users.findAll({
-        where:{
-          id:thing,
-        }
-      });
-    console.log("username: "+user.username);
-    const username = user.username;
-    names.push(username);
-    }
-    const ansId = answers[i].id;
-    userList.push( names);
-  }
-  console.log(userList);
-  // console.log("--------------"+answerNums+"------------");
-  res.status(200).json(userList);
-});
+// exports.getOpinionAttendance = asyncHandler(async (req, res, next) => {
+//   const pollid = req.params.id;
+//   const answers = await poll_answers.findAll({
+//     where: {
+//       pollid:pollid,
+//     }
+//   });
+//  console.log(answers);
+//   const userList = [];
+//   for (i in answers) {
+//     const some =answers[i].id;
+//     const names =[];
+//     const attendancy = await poll_attendance.findAll({
+//       where: {
+//         pollid: pollid,
+//         answerid: some,
+//       },
+//     });
+//     //console.log(attendancy.userid);
+//     for(j in attendancy){
+//       console.log("------------"+attendancy[j].userid)
+//       const thing = attendancy[j].userid;
+//       const user = await users.findOne({
+//         where:{
+//           id:thing,
+//         }
+//       });
+//     console.log("username: "+user.username);
+//     const username = user.username;
+//     names.push(username);
+//     }
+//     const ansId = answers[i].id;
+//     userList.push( names);
+//   }
+//   console.log(userList);
+//   res.status(200).json(userList);
+// });
 
 exports.createPollAttendance = async (req,res,next) => {
   const pollid = req.params.id;
@@ -127,6 +126,50 @@ exports.getOwnAttendance = asyncHandler(async (req,res,next)=>{
     })
   }
 });
+exports.getOpinionAttendance = asyncHandler(async (req, res) => {
+  const pollid = req.params.id;
+  const answers = await poll_answers.findAll({
+    where: {
+      pollid: pollid,
+    },
+  });
+
+  const userList = [];
+  for (let i in answers) {
+    const some = answers[i].id;
+    const names = [];
+    const attendancy = await poll_attendance.findAll({
+      where: {
+        pollid: pollid,
+        answerid: some,
+      },
+    });
+
+    for (let j in attendancy) {
+      const thing = attendancy[j].userid;
+      const user = await users.findOne({
+        where: {
+          id: thing,
+        },
+      });
+
+      const username = user.username;
+      names.push(username);
+    }
+
+    const ansId = answers[i].id;
+    const userListObject = {
+      answerid: ansId,
+      usernames: names,
+    };
+
+    userList.push(userListObject);
+  }
+
+  console.log(userList);
+  res.status(200).json(userList);
+});
+
 exports.updatePollAttendance = asyncHandler(async (req, res, next) => {
   const userid = req.userid;
   const pollId = req.params.id;
