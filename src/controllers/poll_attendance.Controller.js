@@ -5,6 +5,7 @@ const poll_attendance = require("../models/poll_attendance");
 const e = require("express");
 const poll_answers = require("../models/poll_answer");
 const polls = require("../models/polls");
+const users = require("../models/users");
 const moment = require('moment');
 exports.getPollAttendance = asyncHandler(async (req, res, next) => {
   const pollid = req.params.id;
@@ -29,6 +30,47 @@ exports.getPollAttendance = asyncHandler(async (req, res, next) => {
   console.log("--------------"+answerNums+"------------");
   res.status(200).json(answerNums);
 });
+//сонголт хийсэн хүмүүсийн нэрсийг харуулах
+//triple go brrrrr
+exports.getOpinionAttendance = asyncHandler(async (req, res, next) => {
+  const pollid = req.params.id;
+  const answers = await poll_answers.findAll({
+    where: {
+      pollid:pollid,
+    }
+  });
+ //console.log(answers);
+  const userList = [];
+  for (i in answers) {
+    const some =answers[i].id;
+    const names =[];
+    const attendancy = await poll_attendance.findAll({
+      where: {
+        pollid: pollid,
+        answerid: some,
+      },
+    });
+    //console.log(attendancy.userid);
+    for(j in attendancy){
+      console.log("------------"+attendancy[j].userid)
+      const thing = attendancy[j].userid;
+      const user = await users.findAll({
+        where:{
+          id:thing,
+        }
+      });
+    console.log("username: "+user.username);
+    const username = user.username;
+    names.push(username);
+    }
+    const ansId = answers[i].id;
+    userList.push( names);
+  }
+  console.log(userList);
+  // console.log("--------------"+answerNums+"------------");
+  res.status(200).json(userList);
+});
+
 exports.createPollAttendance = async (req,res,next) => {
   const pollid = req.params.id;
   const answerid = req.params.answerid;
@@ -50,7 +92,7 @@ exports.createPollAttendance = async (req,res,next) => {
         return res.status(200).json({
           success: true,
           // token: encryptedPassword,
-          message: "songuuli amjilttai",
+          message: "attendance submitted",
         });
       })
     }
