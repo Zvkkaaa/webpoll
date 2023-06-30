@@ -126,6 +126,7 @@ exports.getOwnAttendance = asyncHandler(async (req,res,next)=>{
     })
   }
 });
+
 exports.getOpinionAttendance = asyncHandler(async (req, res) => {
   const pollid = req.params.id;
   const answers = await poll_answers.findAll({

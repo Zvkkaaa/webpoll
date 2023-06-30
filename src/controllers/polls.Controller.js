@@ -45,54 +45,63 @@ const { start } = require("init");
 // });
 
 exports.createPoll = asyncHandler(async (req, res, next) => {
-  const { question, startdate, expiredate, answer,type,visibility } = req.body
-  const username = req.username
-  if (!question || !startdate || !expiredate || !type || !visibility) {
+  const { question, startdate, expiredate, answer, type, visibility } = req.body;
+  const username = req.username;
+
+  if (!question || !startdate || !expiredate || !type || (type === 'original' && !answer)) {
     return res.status(400).json({
       success: false,
-      message: "table is empty!!!",
+      message: 'Invalid poll data',
     });
   }
+
   const duplicate = await polls.findOne({
-    where:{
-      question:question,
-      type:type,
-      visibility:visibility
-    }
+    where: {
+      question: question,
+      startdate: startdate,
+      expiredate: expiredate,
+    },
   });
-  if(duplicate){
-    return res.status(200).json({
-      success:false,
-      message:"Can't create same poll again"
+
+  if (duplicate) {
+    return res.status(400).json({
+      success: false,
+      message: "Can't create the same poll again",
     });
   }
-        const new_poll = await polls.create({
-          username: username,
-          question: question,
-          startdate: startdate,
-          expiredate: expiredate,
-          type:type,
-          visibility:visibility,
+
+  const newPoll = await polls.create({
+    username: username,
+    question: question,
+    startdate: startdate,
+    expiredate: expiredate,
+    type: type,
+    visibility: type === 'opinion' ? visibility : false,
+  });
+
+  if (type === 'original') {
+    if (answer) {
+      const pollId = newPoll.id;
+      for (let i = 0; i < answer.length; i++) {
+        await poll_answers.create({
+          pollid: pollId,
+          answername: answer[i],
         });
-    if(new_poll.type == "opinion"){
-      return res.status(200).json({
-        success:true,
-        message:"Created poll with opinion"
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid poll data',
       });
     }
-      if(answer){
-          const idd = new_poll.id
-        for (i in answer) {
-          await poll_answers.create({
-            pollid: idd,
-            answername: answer[i],
-          })
-        }
-    res.status(200).json({success:true, message:"created poll with answers/ more like original"});      
-        }
+  }
 
+  res.status(200).json({
+    success: true,
+    message: 'Poll created successfully',
+  });
+});
 
-    });
 
   // exports.createOpinionPoll = asyncHandler(async(req,res,next)=>{
   //   const username = req.username;
