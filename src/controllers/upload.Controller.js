@@ -83,7 +83,7 @@ exports.registerUploadProfile = [upload.single('image'), asyncHandler(async (req
 })];
 
 exports.setDefaultProfilePicture = asyncHandler(async (req, res, next) => {
-  const { userid } = req.params;
+  const userid  = req.params.userid;
 
   try {
     // Create a new entry in the uploads table with the default profile picture

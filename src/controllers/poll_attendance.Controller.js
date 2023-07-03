@@ -167,7 +167,7 @@ exports.getOpinionAttendance = asyncHandler(async (req, res) => {
     userList.push(userListObject);
   }
 
-  console.log(userList);
+  // console.log(userList);
   res.status(200).json(userList);
 });
 
