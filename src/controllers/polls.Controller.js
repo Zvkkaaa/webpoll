@@ -76,7 +76,7 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
     startdate: startdate,
     expiredate: expiredate,
     type: type,
-    visibility: type === 'opinion' ? visibility : false,
+    visibility: visibility,
   });
 
   if (type === 'original') {
