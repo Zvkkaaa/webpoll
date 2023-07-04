@@ -134,9 +134,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
         </html>
       `,
     });
-
     console.log(info.messageId);
-
     res.status(200).json({
       success: true,
       message: "Verification email sent",
@@ -333,4 +331,17 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   } else {
     res.status(404).json("User doesn't exist");
   }
+});
+
+//deleting unverified users!!!
+exports.deleteUnverifiedUsers = asyncHandler(async(req,res,next)=>{
+  await users.destroy({
+    where: {
+      verified:false,
+    },
+  });
+  return res.status(200).json({
+    status:true,
+    message:"deleted"
+  });
 });
