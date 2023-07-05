@@ -4,6 +4,7 @@ const { Op, QueryTypes, Sequelize } = require("sequelize");
 const e = require("express");
 const polls = require("../models/polls");
 const poll_answers = require("../models/poll_answer");
+const users = require("../models/users");
 const { start } = require("init");
 // exports.createPoll = asyncHandler(async (req, res, next) => {
 //   const { question, startdate, expiredate} = req.body;
@@ -257,7 +258,11 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
 
 //use this for my-poll button
 exports.myPolls = asyncHandler(async (req, res, next) => {
-  const username = req.username;
+  const userid = req.userid;
+  const me = await users.findOne({
+    where:{id:userid}
+  });
+  const username = me.username;
   const myPolls = await polls.findAll({
     where: { username: username }
   });
