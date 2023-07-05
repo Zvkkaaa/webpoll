@@ -1,9 +1,11 @@
-const DataTypes = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const db = require("../services/database");
 const moment = require('moment');
+const Polls = require('./polls');
 
-const PollAnswer = db.define(
-  "poll_answers",
+class PollAnswer extends Model {}
+
+PollAnswer.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -12,6 +14,10 @@ const PollAnswer = db.define(
     },
     pollid: {
       type: DataTypes.INTEGER,
+      references: {
+        model: Polls,
+        key: 'id'
+      },
     },
     answername: {
       type: DataTypes.STRING,
@@ -29,8 +35,17 @@ const PollAnswer = db.define(
     },
   },
   {
+    sequelize: db,
+    modelName: 'poll_answers',
     freezeTableName: true,
+    tableName:'poll_answers',
   }
 );
+
+PollAnswer.belongsTo(Polls, {
+  foreignKey: 'pollid',
+  targetKey: 'id',
+  onDelete: 'CASCADE',
+});
 
 module.exports = PollAnswer;

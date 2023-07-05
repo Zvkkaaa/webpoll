@@ -1,9 +1,10 @@
-const DataTypes = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const db = require("../services/database");
 const moment = require('moment');
 
-const Users = db.define(
-  "users",
+class Users extends Model {}
+
+Users.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -13,8 +14,9 @@ const Users = db.define(
     },
     username: {
       type: DataTypes.STRING,
+      unique: true, // Add unique constraint
+      allowNull:false
     },
-    
     email: {
       type: DataTypes.STRING,
       unique: true,
@@ -43,7 +45,10 @@ const Users = db.define(
     },
   },
   {
+    sequelize: db,
+    modelName: 'users',
     freezeTableName: true,
+    tableName:'users'
   }
 );
 

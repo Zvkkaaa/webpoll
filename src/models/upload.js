@@ -1,29 +1,35 @@
-const DataTypes = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const db = require("../services/database");
 const moment = require('moment');
+const Users = require('./users');
 
-const Upload = db.define(
-  "upload",
+class Upload extends Model {}
+
+Upload.init(
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    userid:{
-        type:DataTypes.INTEGER,
+    userid: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Users,
+        key: 'id'
+      },
     },
     filename: {
       type: DataTypes.STRING,
     },
     path: {
-        type: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     size: {
-        type: DataTypes.INTEGER,
-      },
+      type: DataTypes.INTEGER,
+    },
     mimetype: {
-        type: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -38,8 +44,18 @@ const Upload = db.define(
     },
   },
   {
+    sequelize: db,
+    modelName: 'upload',
+    tableName: 'upload',
     freezeTableName: true,
   }
 );
+
+Upload.belongsTo(Users, {
+  foreignKey: 'userid',
+  targedKey:'id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
 
 module.exports = Upload;
