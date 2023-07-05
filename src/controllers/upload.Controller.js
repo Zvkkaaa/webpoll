@@ -148,7 +148,6 @@ exports.updateProfile = [upload.single('image'), asyncHandler(async (req, res, n
   if (!req.file) {
     return res.status(500).json('No file provided');
   }
-
   const userid = req.userid;
   const { filename, path, size, mimetype } = req.file;
   const previous = await uploads.findOne({
