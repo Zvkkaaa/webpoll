@@ -86,12 +86,18 @@ function initialize() {
   // app.use(API.poll_attendanceApi, poll_attendanceRoute );
   // app.use(API.commentsApi, commentsRoute );
   
+  // Users.sync();
+  // Poll.sync();
+  // Poll_Answer.sync();
+  // Poll_Attendances.sync();
+  // Comments.sync();
+  // Upload.sync();
   Users.sync()
-  Poll.sync()
-  Poll_Answer.sync()
-  Poll_Attendances.sync()
-  Comments.sync()
-  Upload.sync()
+  .then(() => Poll.sync())
+  .then(() => Upload.sync())
+  .then(() => Poll_Answer.sync())
+  .then(() => Poll_Attendances.sync())
+  .then(() => Comments.sync());
   app.listen(process.env.PORT, function () {
     console.log("Server is ready at" + process.env.PORT);
   });

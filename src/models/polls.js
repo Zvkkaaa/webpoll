@@ -49,8 +49,8 @@ Polls.init(
   {
     sequelize: db,
     modelName: 'polls',
-    tableName: 'polls', // Added tableName property
-    freezeTableName: true,
+    tableName: 'polls', 
+        freezeTableName: true,
   }
 );
 
