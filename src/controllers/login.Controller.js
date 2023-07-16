@@ -4,7 +4,7 @@ const { Op, QueryTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("../middleware/asyncHandler");
 const Users = require("../models/users");
-
+const io = require('socket.io');
 exports.Login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -68,6 +68,7 @@ exports.Login = asyncHandler(async (req, res, next) => {
             message: "Амжилттай нэвтэрлээ",
             token,
           });
+          
           return;
         } else {
           res.status(400).json({
