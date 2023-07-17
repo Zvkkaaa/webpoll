@@ -2,9 +2,9 @@ const { DataTypes, Model } = require('sequelize');
 const db = require('../services/database');
 const moment = require('moment');
 const Users = require('./users');
-class ChatMessage extends Model {}
+class allChat extends Model {}
 
-ChatMessage.init(
+allChat.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -19,14 +19,6 @@ ChatMessage.init(
         key: 'username',
       },
     },
-    recipient_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'username',
-      },
-    },
     content: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -34,21 +26,15 @@ ChatMessage.init(
   },
   {
     sequelize: db,
-    modelName: 'chat_message',
+    modelName: 'allChat',
     freezeTableName: true,
-    tableName: 'chat_message',
+    tableName: 'allChat',
   }
 );
-ChatMessage.belongsTo(Users, {
+allChat.belongsTo(Users, {
     foreignKey: 'sender_name',
     targetKey: 'username',
     onDelete: 'CASCADE',
     onUpdate:'CASCADE'
-  });
-  ChatMessage.belongsTo(Users, {
-    foreignKey: 'recipient_name',
-    targetKey: 'username',
-    onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
-  });
-module.exports = ChatMessage;
+  }); 
+module.exports = allChat;

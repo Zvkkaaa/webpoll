@@ -28,6 +28,8 @@ const Poll_Attendances = require('../models/poll_attendance')
 const Comments = require('../models/comments')
 const Upload = require('../models/upload');
 const ChatMessage = require('../models/chatMessage');
+const allChat = require('../models/allChat');
+
 // const scheduler = require("./scheduler"); // устгаж болохгүй!!!
 //uuganaaa
 function initialize() {
@@ -102,7 +104,8 @@ function initialize() {
   .then(() => Poll_Answer.sync())
   .then(() => Poll_Attendances.sync())
   .then(() => Comments.sync())
-  .then(() => ChatMessage.sync());
+  .then(() => {ChatMessage.sync();
+              allChat.sync();});
   app.listen(process.env.PORT, function () {
     console.log("Server is ready at" + process.env.PORT);
   });
