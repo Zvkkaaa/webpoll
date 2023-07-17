@@ -4,10 +4,10 @@ const { Op, QueryTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("../middleware/asyncHandler");
 const Users = require("../models/users");
-const io = require('socket.io');
+// const io = require('socket.io');
+const loggedUsers = [];
 exports.Login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-
   //console.log(req.body)
 
   if (!email || !password) {
@@ -63,6 +63,8 @@ exports.Login = asyncHandler(async (req, res, next) => {
           );
           //  const token = userController.generateJwt(userid, roleid);
             console.log(token);
+            console.log("this user becomes logged");
+            loggedUsers.push(username);
           res.status(200).json({
             success: true,
             message: "Амжилттай нэвтэрлээ",
@@ -320,3 +322,30 @@ exports.changePassword= asyncHandler(async (req, res, next) => {
 
 });
 
+exports.getLoggedUser = asyncHandler(async(req,res,next)=>{
+  if(loggedUsers)
+  {return res.status(200).json(loggedUsers)}
+  if(!loggedUsers)
+  {return res.status(404).json({
+    success:false,
+    message:"not found"
+  })}
+
+});
+exports.disconnect = asyncHandler(async (req, res, next) => {
+  const disco = req.params.username;
+  const index = loggedUsers.findIndex((user) => user === disco);
+
+  if (index !== -1) {
+    loggedUsers.splice(index, 1);
+    return res.status(200).json({
+      success: true,
+      message: "User disconnected",
+    });
+  } else {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+});
