@@ -1,94 +1,165 @@
 const jwt = require("jsonwebtoken");
-
 const { Op, QueryTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("../middleware/asyncHandler");
 const Users = require("../models/users");
+const profile = require("../models/upload");
 // const io = require('socket.io');
 const loggedUsers = [];
 exports.Login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  //console.log(req.body)
 
   if (!email || !password) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "Параметр дутуу байна.",
     });
-    return;
   }
 
-  await Users.findOne({
+  const user = await Users.findOne({
     where: {
       email: email,
       verified: true,
     },
-  })
-    .then((result) => {
-      //console.log("******", result);
-      if (result == null) {
-        res.status(500).json({
-          success: false,
-          message: "Бүртгэлгүй байна",
-        });
-        return;
-      }
-      const oldPassword = result.password;
+  });
 
-      bcrypt.compare(password, oldPassword).then(async (result) => {
-        if (result == true) {
-          const attributes = await Users.findOne({
-            attributes: ["id", "username", "email"],
-            where: {
-              [Op.and]: [
-                {
-                  email,
-                },
-              ],
-            },
-          });
-
-          const userid = attributes.id;
-          const username = attributes.username;
-          const token = jwt.sign(
-            {
-              userid,
-              username,
-              email,
-            },
-            process.env.JWT_SECRET,
-            {
-              expiresIn: process.env.JWT_EXPIRESIN,
-            }
-          );
-          //  const token = userController.generateJwt(userid, roleid);
-            console.log(token);
-            console.log("this user becomes logged");
-            loggedUsers.push(username);
-          res.status(200).json({
-            success: true,
-            message: "Амжилттай нэвтэрлээ",
-            token,
-          });
-          
-          return;
-        } else {
-          res.status(400).json({
-            success: false,
-            message: "Нэвтрэх нэр эсвэл нууц үг буруу байна",
-          });
-        }
-      });
-    })
-    .catch((err) => {
-      // console.log(err)
-      // logger.error("Алдаа гарлаа: " + err);
-      return res.status(500).json({
-        success: false,
-        message: "Серверийн алдаа",
-      });
+  if (!user) {
+    return res.status(500).json({
+      success: false,
+      message: "Бүртгэлгүй байна",
     });
+  }
+
+  const oldPassword = user.password;
+
+  const passwordMatch = await bcrypt.compare(password, oldPassword);
+
+  if (passwordMatch) {
+    const attributes = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    const token = jwt.sign(
+      {
+        userid: attributes.id,
+        username: attributes.username,
+        email: attributes.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRESIN,
+      }
+    );
+
+    const index = loggedUsers.findIndex((user) => user.username === attributes.username);
+
+    if (index !== -1) {
+      loggedUsers[index].online = true;
+      console.log(loggedUsers[index].online);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Амжилттай нэвтэрлээ",
+      token,
+    });
+  } else {
+    return res.status(400).json({
+      success: false,
+      message: "Нэвтрэх нэр эсвэл нууц үг буруу байна",
+    });
+  }
 });
+
+// exports.Login = asyncHandler(async (req, res, next) => {
+//   const { email, password } = req.body;
+//   //console.log(req.body)
+
+//   if (!email || !password) {
+//     res.status(400).json({
+//       success: false,
+//       message: "Параметр дутуу байна.",
+//     });
+//     return;
+//   }
+
+//   await Users.findOne({
+//     where: {
+//       email: email,
+//       verified: true,
+//     },
+//   })
+//     .then((result) => {
+//       //console.log("******", result);
+//       if (result == null) {
+//         res.status(500).json({
+//           success: false,
+//           message: "Бүртгэлгүй байна",
+//         });
+//         return;
+//       }
+//       const oldPassword = result.password;
+
+//       bcrypt.compare(password, oldPassword).then(async (result) => {
+//         if (result == true) {
+//           const attributes = await Users.findOne({
+//             attributes: ["id", "username", "email"],
+//             where: {
+//               [Op.and]: [
+//                 {
+//                   email,
+//                 },
+//               ],
+//             },
+//           });
+
+//           const userid = attributes.id;
+//           const username = attributes.username;
+//           const token = jwt.sign(
+//             {
+//               userid,
+//               username,
+//               email,
+//             },
+//             process.env.JWT_SECRET,
+//             {
+//               expiresIn: process.env.JWT_EXPIRESIN,
+//             }
+//           );
+//           //  const token = userController.generateJwt(userid, roleid);
+//             console.log(token);
+//             console.log("this user becomes logged");
+//             //update online to true using username
+//             const index = loggedUsers.findIndex((user) => user.username === username);
+//             console.log("======================"+index)
+//             if (index !== -1){loggedUsers[index].online = true;
+//             } 
+//           res.status(200).json({
+//             success: true,
+//             message: "Амжилттай нэвтэрлээ",
+//             token,
+//           });
+          
+//           return;
+//         } else {
+//           res.status(400).json({
+//             success: false,
+//             message: "Нэвтрэх нэр эсвэл нууц үг буруу байна",
+//           });
+//         }
+//       });
+//     })
+//     .catch((err) => {
+//       // console.log(err)
+//       // logger.error("Алдаа гарлаа: " + err);
+//       return res.status(500).json({
+//         success: false,
+//         message: "Серверийн алдаа",
+//       });
+//     });
+// });
 
 exports.adminLogin = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -323,21 +394,40 @@ exports.changePassword= asyncHandler(async (req, res, next) => {
 });
 
 exports.getLoggedUser = asyncHandler(async(req,res,next)=>{
-  if(loggedUsers)
-  {return res.status(200).json(loggedUsers)}
-  if(!loggedUsers)
-  {return res.status(404).json({
-    success:false,
-    message:"not found"
-  })}
-
+  console.log("ene bolj bn");
+  if(loggedUsers.length===0)
+  {const users = await Users.findAll({
+    where:{
+      verified:true
+    }
+  });
+    console.log("ydj ene bolsoon");
+    for(let i in users){
+      console.log("creating user list with offline logged");
+      const username = users[i].username;
+      const profilePic = await profile.findOne({
+        where: {
+          userid:users[i].id
+        }
+      });
+      const online = false;
+      const userList ={
+        username:username,
+        path:profilePic.path,
+        online:online,
+      }
+      loggedUsers.push(userList);
+    }}
+  return res.status(200).json(loggedUsers)
 });
 exports.disconnect = asyncHandler(async (req, res, next) => {
   const disco = req.params.username;
-  const index = loggedUsers.findIndex((user) => user === disco);
-
+  //gonna fix with update not delete
+  //just update online value to false with it 
+  const index = loggedUsers.findIndex((user) => user.username === disco);
+  console.log("======================"+index)
   if (index !== -1) {
-    loggedUsers.splice(index, 1);
+    loggedUsers[index].online = false;
     return res.status(200).json({
       success: true,
       message: "User disconnected",
@@ -348,4 +438,23 @@ exports.disconnect = asyncHandler(async (req, res, next) => {
       message: "User not found",
     });
   }
+});
+exports.initializeLoggedUsers = asyncHandler(async(req,res,next)=>{
+//this one has to be called instantly after back on?
+  const users = await Users.findAll();
+  for(let i in users){
+    const username = users[i].username;
+    const profilePic = await profile.findOne({
+      where: {
+        userid:users[i].id
+      }
+    });
+    const online = false;
+    const userList ={
+      username:username,
+      path:profilePic.path,
+      online:online,
+    }
+    loggedUsers.push(userList);
+  }    
 });

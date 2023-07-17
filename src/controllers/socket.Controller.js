@@ -3,6 +3,7 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
 const e = require("express");
 const chatMessage = require("../models/chatMessage");
+const allChat = require("../models/allChat");
 //for getting chat history within two person, one from token other from params for this time 07-16 
 exports.getChats = asyncHandler(async (req, res, next) => {
     const me = req.username;
@@ -41,5 +42,28 @@ exports.saveChat = asyncHandler(async(req,res,next)=>{
         recipient_name:chatter,
         content:content,
     });
+
+});
+exports.getAllChat = asyncHandler(async(req,res,next)=>{
+  const publicChat = await allChat.findAll({
+    order:[["id","DESC"]]
+  });
+  if(!publicChat){return res.status(404).json({
+    success:false,
+    message:"Not found" 
+});}
+  return res.status(200).json({
+    success:true,
+    data:publicChat
+  });
+});
+exports.writeAllChat = asyncHandler(async(req,res,next)=>{
+  const username = req.username;
+  const cont = req.body;
+  //this does only save to db not send
+  const message = await allChat.create({
+    sender_name:username,
+    content:cont
+  });
 
 });
