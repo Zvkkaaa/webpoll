@@ -392,34 +392,39 @@ exports.changePassword= asyncHandler(async (req, res, next) => {
     });
 
 });
+exports.getLoggedUser = asyncHandler(async (req, res, next) => {
+  console.log("Fetching logged users...");
 
-exports.getLoggedUser = asyncHandler(async(req,res,next)=>{
-  console.log("ene bolj bn");
-  if(loggedUsers.length===0)
-  {const users = await Users.findAll({
-    where:{
-      verified:true
+  const users = await Users.findAll({
+    where: {
+      verified: true
     }
   });
-    console.log("ydj ene bolsoon");
-    for(let i in users){
-      console.log("creating user list with offline logged");
-      const username = users[i].username;
-      const profilePic = await profile.findOne({
-        where: {
-          userid:users[i].id
-        }
-      });
-      const online = false;
-      const userList ={
-        username:username,
-        path:profilePic.path,
-        online:online,
+
+  const loggedUsers = [];
+
+  for (let i in users) {
+    console.log("Creating user list with offline logged user...");
+    const username = users[i].username;
+    const profilePic = await profile.findOne({
+      where: {
+        userid: users[i].id
       }
-      loggedUsers.push(userList);
-    }}
-  return res.status(200).json(loggedUsers)
+    });
+    const online = false;
+    const userList = {
+      username: username,
+      path: `/image/displayWithUsername/${username}`, // Endpoint to serve the image file directly
+      online: online,
+    };
+    loggedUsers.push(userList);
+  }
+
+  console.log("Fetched logged users:", loggedUsers);
+
+  return res.status(200).json(loggedUsers);
 });
+
 exports.disconnect = asyncHandler(async (req, res, next) => {
   const disco = req.params.username;
   //gonna fix with update not delete
