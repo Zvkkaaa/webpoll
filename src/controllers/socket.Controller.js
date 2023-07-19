@@ -1,10 +1,8 @@
 const asyncHandler = require("../middleware/asyncHandler");
-//const db = require("../services/database");
-const { Op, QueryTypes, Sequelize } = require("sequelize");
-const e = require("express");
-const chatMessage = require("../models/chatMessage");
-const io = require("../services/socket");
+const { Op } = require("sequelize");
 const allChat = require("../models/chats");
+const io = require("../services/socket");
+
 exports.getAllChat = asyncHandler(async (req, res, next) => {
   const publicChat = await allChat.findAll({
     order: [["id", "DESC"]],
@@ -15,26 +13,28 @@ exports.getAllChat = asyncHandler(async (req, res, next) => {
     data: publicChat,
   });
 });
-exports.writeAllChat = asyncHandler(async (req, res, next) => {
-  console.log("11111111111");
-  const username = req.username;
-  const content = req.body;
-  console.log("2222222222222222");
- 
+
+exports.writeAllChat = asyncHandler(async (protect,thing) => {
   // Create the chat message in the database
   const message = await allChat.create({
-    sender_name: username,
-    content: content,
+    sender_name: protect.req.username,
+    content: thing,
   });
-  console.log("333333333333333333333333");
+
   // Emit the chat message event to the Socket.IO server
   io.emit("chat message", message);
-  console.log("come a little bit closer")
-  res.status(201).json({
+
+  res.json({
     success: true,
     data: message,
   });
 });
+
+exports.getOnlineUsers = asyncHandler(async(req,res,next)=>{
+  //write something here to use loggedUsers
+});
+
+
 //odoohondoo ashiglahgui
 exports.getChats = asyncHandler(async (req, res, next) => {
   const me = req.username;
