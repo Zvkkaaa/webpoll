@@ -2,9 +2,10 @@ const { DataTypes, Model } = require('sequelize');
 const db = require('../services/database');
 const moment = require('moment');
 const Users = require('./users');
-class allChat extends Model {}
 
-allChat.init(
+class Chats extends Model {}
+
+Chats.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -26,15 +27,17 @@ allChat.init(
   },
   {
     sequelize: db,
-    modelName: 'allChat',
+    modelName: 'Chats',
     freezeTableName: true,
-    tableName: 'allChat',
+    tableName: 'chats',
   }
 );
-allChat.belongsTo(Users, {
-    foreignKey: 'sender_name',
-    targetKey: 'username',
-    onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
-  }); 
-module.exports = allChat;
+
+Chats.belongsTo(Users, {
+  foreignKey: 'sender_name',
+  targetKey: 'username',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+
+module.exports = Chats;

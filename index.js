@@ -12,7 +12,7 @@ const path = require('path');
 const fileupload = require("express-fileupload");
 const webServer = require("./src/services/web-server");
 const database = require("./src/services/database");
-
+const socket = require("./src/services/socket");
 app.use('/upload', express.static('src/upload'));
 
 async function startup() {
@@ -27,6 +27,14 @@ async function startup() {
   try {
     await database.initialize();
     console.log("Өгөгдлийн сантай амжилттай холбогдлоо...");
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+
+  try {
+    await socket.initialize();
+    console.log("Дотоод сүлжээг амжилттай холболоо...");
   } catch (err) {
     console.error(err);
     process.exit(1);
@@ -53,7 +61,13 @@ async function shutdown(e) {
     console.error(e);
     err = err || e;
   }
-
+  try {
+    console.log("Дотоод сүлжээн холболтыг салгалаа...");
+    await socket.close();
+  } catch (e) {
+    console.error(e);
+    err = err || e;
+  }
   console.log("Exiting process");
 
   if (err) {
