@@ -1,7 +1,7 @@
 const asyncHandler = require("../middleware/asyncHandler");
 const { Op } = require("sequelize");
 const allChat = require("../models/chats");
-const io = require("../services/socket");
+
 
 exports.getAllChat = asyncHandler(async (req, res, next) => {
   const publicChat = await allChat.findAll({
@@ -14,21 +14,27 @@ exports.getAllChat = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.writeAllChat = asyncHandler(async (protect,thing) => {
+exports.writeAllChat = asyncHandler(async (io, username, content) => {
+  console.log("--------------"+content+"--------------------");
+  console.log(typeof io.emit === 'function');
+  console.log("--------------"+username+"--------------------");
   // Create the chat message in the database
   const message = await allChat.create({
-    sender_name: protect.req.username,
-    content: thing,
+    sender_name: username,
+    content: content,
   });
 
   // Emit the chat message event to the Socket.IO server
-  io.emit("chat message", message);
+  io.emit('chat message', message);
 
-  res.json({
+  return {
     success: true,
     data: message,
-  });
+  };
 });
+
+
+
 
 exports.getOnlineUsers = asyncHandler(async(req,res,next)=>{
   //write something here to use loggedUsers

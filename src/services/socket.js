@@ -1,43 +1,58 @@
-//gonna use this github also ::: https://github.com/trulymittal/chat-socket.io
-
 const http = require("http");
 const socketIO = require("socket.io");
 const express = require("express");
 const cors = require('cors');
-const {writeAllChat, getAllChat} = require("../controllers/socket.Controller")
+const { writeAllChat, getAllChat } = require("../controllers/socket.Controller");
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
+
 
 const server = http.createServer(app);
-const io = require('socket.io')(server);
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
 let connectedUsers = 0;
+
+let sockets = [];
 
 async function initialize() {
   console.log("Connecting to chatting server");
-  
-  // Place your database initialization code here
-  // For example, you can include the code for connecting to PostgreSQL using Sequelize
 
   io.on("connection", (socket) => {
     console.log("A user connected");
     connectedUsers++;
+    sockets.push(socket); // Store the socket in an array
 
-    socket.on("chat", (protect, message) => writeAllChat(protect, message));
-
+    socket.on('chat message', (username, content) => {
+      writeAllChat(io, username, content);
+    });
+    
     socket.on("disconnect", () => {
       console.log("A user disconnected");
       connectedUsers--;
+      sockets = sockets.filter(s => s !== socket); // Remove the socket from the array
     });
   });
 
   server.listen(process.env.SOCKET_PORT, () => {
     console.log(`Socket.IO server listening on port ${process.env.SOCKET_PORT}`);
   });
+
+  // Listen for SIGINT (Ctrl+C) and SIGUSR2 (used by Nodemon) signals and disconnect all sockets
+  process.on('SIGINT', disconnectSockets);
+  process.on('SIGUSR2', disconnectSockets);
 }
+
+function disconnectSockets() {
+  sockets.forEach(socket => socket.disconnect());
+  process.exit(); // Exit the process after all sockets are disconnected
+}
+
 
 async function close() {
   console.log("Chatting server closing...");
