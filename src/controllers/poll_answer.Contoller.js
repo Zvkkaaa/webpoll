@@ -5,15 +5,14 @@ const e = require("express");
 const poll_answers = require("../models/poll_answer");
 const attendance = require('../models/poll_attendance');
 exports.getPollAnswers = asyncHandler(async (req, res, next) => {
-  const idd = req.params.id; // Assuming the parameter name is "id"
-  // Assuming "polls" is your Sequelize model
-  const poll = await poll_answers.findAll({
+  const id = req.params.id; 
+  const pollAnswers = await poll_answers.findAll({
     where: {
-      pollid: idd,
+      pollid: id,
     },
   });
-  if (poll) {
-    res.status(200).json(poll);
+  if (pollAnswers) {
+    res.status(200).json(pollAnswers);
   } else {
     res.status(400).json("Poll answers doesn't exist!");
   }
@@ -39,7 +38,7 @@ exports.createPollAnswer = asyncHandler(async(req, res, next) => {
   const {answer} = req.body;
   const userid = req.userid;
 
-  console.log("--------------------" + pollid, answer, userid)
+  // console.log("--------------------" + pollid, answer, userid)
 
   if (!answer) {
     return res.status(400).json({
@@ -79,14 +78,14 @@ exports.createPollAnswer = asyncHandler(async(req, res, next) => {
   });
 
   if (!dupatt) {
-    console.log("creating attendance letsgo");
+    // console.log("creating attendance letsgo");
     await attendance.create({
       pollid: pollid,
       userid: userid,
       answerid: choice
     });
   } else {
-    console.log("updating attendance smoge");
+    // console.log("updating attendance smoge");
     await attendance.update(
       { answerid: choice || null },
       {
@@ -121,6 +120,6 @@ exports.getAnswernames = asyncHandler(async(req,res,next)=>{
   }
   else res.status(500).json({
     success:false,
-    message: "Answers doesn't exist!"
+    message: "Answers don't exist!"
   });
 });

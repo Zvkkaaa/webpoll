@@ -107,17 +107,13 @@ exports.setDefaultProfilePicture = asyncHandler(async (req, res, next) => {
 exports.displayImage = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
   console.log('User ID:', userId);
-  let patho;
   const imageInfo = await uploads.findOne({
     where: {
       userid: userId,
     },
   });
-  patho = imageInfo.path;
-  console.log(patho);
-  if (patho) {
-    console.log('Image URL:', patho);
-    res.sendFile(patho); // Serve the image file directly
+  if (imageInfo) {
+    res.sendFile(imageInfo.path);
   } else {
     return res.status(404).json({ error: 'Image not found' });
   }

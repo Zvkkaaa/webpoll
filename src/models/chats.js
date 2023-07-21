@@ -12,12 +12,12 @@ Chats.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    sender_name: {
-      type: DataTypes.STRING,
+    sender_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'username',
+        model: Users,
+        key: 'id',
       },
     },
     content: {
@@ -34,8 +34,8 @@ Chats.init(
 );
 
 Chats.belongsTo(Users, {
-  foreignKey: 'sender_name',
-  targetKey: 'username',
+  foreignKey: 'sender_id',
+  targetKey: 'id',
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
 });

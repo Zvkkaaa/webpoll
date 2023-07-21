@@ -6,28 +6,27 @@ const comments = require("../models/comments");
 
 exports.createComment = asyncHandler(async (req, res, netx) => {
   // try{
-  const username = req.username;
+  const userid = req.userid;
   const pollId = req.params.id;
   const {comment} = req.body;
  // console.log(Date.now());
  if(comment){
-  const commento = await comments.create({
-  username:username,
+  const newComment = await comments.create({
+  userid:userid,
   pollid:pollId,
   comment : comment,
 });
 
-console.log("88888888888888888888888888")
-if(commento){
-  console.log("added")
+// console.log("88888888888888888888888888")
+if(newComment){
+  // console.log("added")
   //console.log(commento);
   return res.status(200).json({
-    // success: true,
-    //  message: "created comment for: "+pollId,
-    commento
+    success: true,
+    data: newComment
   });
 }else{
-  console.log("-----------------------------------------")
+  // console.log("-----------------------------------------")
   return res.status(500).json({
     success: false,
     message: "failed"
@@ -68,16 +67,15 @@ else{ res.status(400).json({success: false,message: "table is empty"});}
 //   res.status(200).json(comments);
 // });
 exports.getComments = asyncHandler(async (req, res, next) => {
-  const idd = req.params.id; // Assuming the parameter name is "id"
-  // Assuming "polls" is your Sequelize model
-  const commentos = await comments.findAll({
+  const id = req.params.id; 
+  const pollComments = await comments.findAll({
     where: {
-      pollid: idd,
+      pollid: id,
     },
     order:[["createdAt","DESC"]]
   });
-  if (commentos) {
-    res.status(200).json(commentos);
+  if (pollComments) {
+    res.status(200).json(pollComments);
   } else {
     res.status(400).json("Comments doesn't exist!");
   }

@@ -11,20 +11,20 @@ ChatMessage.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    sender_name: {
-      type: DataTypes.STRING,
+    sender_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'username',
+        model: Users,
+        key: 'id',
       },
     },
-    recipient_name: {
-      type: DataTypes.STRING,
+    recipient_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'username',
+        model: Users,
+        key: 'id',
       },
     },
     content: {
@@ -40,14 +40,14 @@ ChatMessage.init(
   }
 );
 ChatMessage.belongsTo(Users, {
-    foreignKey: 'sender_name',
-    targetKey: 'username',
+    foreignKey: 'sender_id',
+    targetKey: 'id',
     onDelete: 'CASCADE',
     onUpdate:'CASCADE'
   });
   ChatMessage.belongsTo(Users, {
-    foreignKey: 'recipient_name',
-    targetKey: 'username',
+    foreignKey: 'recipient_id',
+    targetKey: 'id',
     onDelete: 'CASCADE',
     onUpdate:'CASCADE'
   });

@@ -126,7 +126,7 @@ exports.getOwnAttendance = asyncHandler(async (req,res,next)=>{
     })
   }
 });
-
+//update: from 7-21 sending userid's instead of usernames
 exports.getOpinionAttendance = asyncHandler(async (req, res) => {
   const pollid = req.params.id;
   const answers = await poll_answers.findAll({
@@ -138,7 +138,7 @@ exports.getOpinionAttendance = asyncHandler(async (req, res) => {
   const userList = [];
   for (let i in answers) {
     const some = answers[i].id;
-    const names = [];
+    const ids = [];
     const attendancy = await poll_attendance.findAll({
       where: {
         pollid: pollid,
@@ -148,20 +148,15 @@ exports.getOpinionAttendance = asyncHandler(async (req, res) => {
 
     for (let j in attendancy) {
       const thing = attendancy[j].userid;
-      const user = await users.findOne({
-        where: {
-          id: thing,
-        },
-      });
 
-      const username = user.username;
-      names.push(username);
+
+      ids.push(thing);
     }
 
     const ansId = answers[i].id;
     const userListObject = {
       answerid: ansId,
-      usernames: names,
+      attendances: ids,
     };
 
     userList.push(userListObject);

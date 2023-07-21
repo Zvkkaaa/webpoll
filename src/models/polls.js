@@ -12,11 +12,11 @@ Polls.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    username: {
-      type: DataTypes.STRING,
+    userid: {
+      type: DataTypes.INTEGER,
       references: {
         model: Users,
-        key: 'username'
+        key: 'id'
       },
     },
     question: {
@@ -55,8 +55,8 @@ Polls.init(
 );
 
 Polls.belongsTo(Users, {
-  foreignKey: 'username',
-  targetKey: 'username',
+  foreignKey: 'userid',
+  targetKey: 'id',
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
 });

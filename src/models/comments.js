@@ -20,11 +20,11 @@ Comment.init(
         key: 'id'
       },
     },
-    username: {
-      type: DataTypes.STRING,
+    userid: {
+      type: DataTypes.INTEGER,
       references: {
         model: Users,
-        key: 'username'
+        key: 'id'
       },
     },
     comment: {
@@ -59,8 +59,8 @@ Comment.init(
 );
 
 Comment.belongsTo(Users, {
-  foreignKey: 'username',
-  targetKey: 'username',
+  foreignKey: 'userid',
+  targetKey: 'id',
   onDelete: 'CASCADE',
 });
 

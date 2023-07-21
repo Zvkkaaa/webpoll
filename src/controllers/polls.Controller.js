@@ -47,7 +47,7 @@ const { start } = require("init");
 
 exports.createPoll = asyncHandler(async (req, res, next) => {
   const { question, startdate, expiredate, answer, type, visibility } = req.body;
-  const username = req.username;
+  const userid = req.userid;
 
   if (!question || !startdate || !expiredate || !type || (type === 'original' && !answer)) {
     return res.status(400).json({
@@ -72,7 +72,7 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
   }
 
   const newPoll = await polls.create({
-    username: username,
+    userid:userid,
     question: question,
     startdate: startdate,
     expiredate: expiredate,
@@ -259,12 +259,9 @@ exports.searchPollsByQuestion = asyncHandler(async (req, res, next) => {
 //use this for my-poll button
 exports.myPolls = asyncHandler(async (req, res, next) => {
   const userid = req.userid;
-  const me = await users.findOne({
-    where:{id:userid}
-  });
-  const username = me.username;
+
   const myPolls = await polls.findAll({
-    where: { username: username }
+    where: { userid: userid }
   });
   if (!myPolls) {
     return res.status(404).json({
