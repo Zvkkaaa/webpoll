@@ -6,7 +6,6 @@ const { writeAllChat, getAllChat } = require("../controllers/socket.Controller")
 
 const app = express();
 
-
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
@@ -17,8 +16,7 @@ const io = socketIO(server, {
 });
 
 let connectedUsers = 0;
-
-let sockets = [];
+let userSockets = {};
 
 async function initialize() {
   console.log("Connecting to chatting server");
@@ -26,16 +24,35 @@ async function initialize() {
   io.on("connection", (socket) => {
     console.log("A user connected");
     connectedUsers++;
-    sockets.push(socket); // Store the socket in an array
-
-    socket.on('chat message', (username, content) => {
-      writeAllChat(io, username, content);
+    // console.log(connectedUsers);
+    // Listen for the login event to receive the username from the client
+    socket.on("Login", (username) => {
+      console.log(`${username} has connected`);
+      // Store the socket with the username in the object
+      connectedUsers++;
+      userSockets[username] = socket;
     });
     
+    socket.on('writeAllChat', (username, content) => {
+      writeAllChat(io, username, content);
+      console.log("message sent: " + content + " from: " + username);
+    });
+
+    socket.on('display message', (username) => {
+      getAllChat(io, username);
+    });
+
     socket.on("disconnect", () => {
       console.log("A user disconnected");
       connectedUsers--;
-      sockets = sockets.filter(s => s !== socket); // Remove the socket from the array
+
+      // Remove the disconnected socket from the object
+      // To do this, we need to find the associated username first.
+      const disconnectedUser = Object.keys(userSockets).find((username) => userSockets[username] === socket);
+      if (disconnectedUser) {
+        delete userSockets[disconnectedUser];
+        console.log(`${disconnectedUser} has disconnected`);
+      }
     });
   });
 
@@ -49,10 +66,9 @@ async function initialize() {
 }
 
 function disconnectSockets() {
-  sockets.forEach(socket => socket.disconnect());
+  Object.values(userSockets).forEach(socket => socket.disconnect());
   process.exit(); // Exit the process after all sockets are disconnected
 }
-
 
 async function close() {
   console.log("Chatting server closing...");
