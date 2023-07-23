@@ -138,7 +138,7 @@ exports.getOpinionAttendance = asyncHandler(async (req, res) => {
   const userList = [];
   for (let i in answers) {
     const some = answers[i].id;
-    const ids = [];
+    const usernames = [];
     const attendancy = await poll_attendance.findAll({
       where: {
         pollid: pollid,
@@ -148,15 +148,19 @@ exports.getOpinionAttendance = asyncHandler(async (req, res) => {
 
     for (let j in attendancy) {
       const thing = attendancy[j].userid;
-
-
-      ids.push(thing);
+      const user = await users.findOne({
+        where:{
+          id:thing
+        }
+      });
+      const username = user.username;
+      usernames.push(username);
     }
 
     const ansId = answers[i].id;
     const userListObject = {
       answerid: ansId,
-      attendances: ids,
+      usernames: usernames,
     };
 
     userList.push(userListObject);

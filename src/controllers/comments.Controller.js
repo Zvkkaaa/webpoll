@@ -3,6 +3,7 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { Op, QueryTypes, Sequelize } = require("sequelize");
 const e = require("express");
 const comments = require("../models/comments");
+const users = require("../models/users");
 
 exports.createComment = asyncHandler(async (req, res, netx) => {
   // try{
@@ -74,6 +75,14 @@ exports.getComments = asyncHandler(async (req, res, next) => {
     },
     order:[["createdAt","DESC"]]
   });
+  for(let i in pollComments){
+    const user = await users.findOne({
+      where:{
+        id:pollComments[i].userid
+      }
+    });
+    pollComments[i].username = user.username;
+  }
   if (pollComments) {
     res.status(200).json(pollComments);
   } else {

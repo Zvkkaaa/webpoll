@@ -30,14 +30,6 @@ Comment.init(
     comment: {
       type: DataTypes.STRING,
     },
-    posteddate: {
-      type: DataTypes.DATE,
-      get() {
-        return moment(this.getDataValue("posteddate")).format(
-          "YYYY/MM/DD HH:mm"
-        );
-      },
-    },
     createdAt: {
       type: DataTypes.DATE,
       get() {

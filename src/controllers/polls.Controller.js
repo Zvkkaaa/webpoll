@@ -111,12 +111,33 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
   // });
   //getAllpolls
   exports.getPolls = asyncHandler(async (req, res, next) => {
-    const pollers = await polls.findAll({
+    const Polls = await polls.findAll({
       order:[["startdate","DESC"]]
   
     });
-    if (pollers) res.status(200).json(pollers);
-    else res.status(400).json({ error: error.message });
+    // const formattedPolls = [];
+    for(let i in Polls){
+      const user = await users.findOne({
+        where:{
+          id:Polls[i].userid
+        }
+      });
+      if(user){
+        //taking only username from here
+        
+        Polls[i].username = user.username;
+        // const username = user.username;
+        // const pollObj = {
+        //   poll:Polls[i],
+        //   username:username,
+        // };
+        // formattedPolls.push(pollObj)
+
+      }
+    }
+    // res.status(200).json(formattedPolls);
+    res.status(200).json(Polls);
+  
   });
   exports.getPoll = asyncHandler(async (req, res, next) => {
     const idd = req.params.id;
@@ -125,6 +146,12 @@ exports.createPoll = asyncHandler(async (req, res, next) => {
         id: idd,
       },
     });
+    const user = await users.findOne({
+      where:{
+        id:poll.userid
+      }
+    });
+    poll.username = user.username;
     if (poll) res.status(200).json(poll);
     else res.status(400).json("Poll doesn't exist!");
   });

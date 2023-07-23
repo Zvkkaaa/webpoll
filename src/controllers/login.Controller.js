@@ -6,7 +6,7 @@ const Users = require("../models/users");
 const profile = require("../models/upload");
 // const io = require('socket.io');
 const loggedUsers = [];
-const socket = require("")
+
 exports.Login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
