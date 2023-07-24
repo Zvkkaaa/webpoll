@@ -1,72 +1,103 @@
-const http = require("http");
-const socketIO = require("socket.io");
-const express = require("express");
-const cors = require('cors');
-const { writeAllChat, getAllChat, handleLogin } = require("../controllers/socket.Controller");
-
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+const asyncHandler = require("../middleware/asyncHandler");
+const { Op } = require("sequelize");
+const allChat = require("../models/chats");
+const chatMessage = require("../models/chatMessage");
+const users = require("../models/users");
+exports.getAllChat = asyncHandler(async () => {
+  console.log("displaying all chat");
+  const publicChat = await allChat.findAll({
+    order: [["id", "DESC"]],
+  });
+  res.status(200).json({
+    success: true,
+    data: publicChat,
+  });
 });
 
-let connectedUsers = 0;
-let userSockets = {};
-
-async function initialize() {
-  console.log("Connecting to chatting server");
-
-  io.on("connection", (socket) => {
-    console.log("A user connected");
-    connectedUsers++;
-
-    // Listen for the login event to receive the username from the client
-    socket.on("login", (username) => {
-      console.log(`${username} has connected`);
-      
-      // Call the controller function for login handling
-      handleLogin(username);
-      
-      // Store the socket with the username in the object
-      userSockets[username] = socket;
+exports.writeAllChat = asyncHandler(async (io, data) => {
+  console.log("--------------"+data.content+"--------------------");
+  console.log(typeof io.emit === 'function');
+  console.log("--------------"+data.sender+"--------------------");
+  console.log("--------------"+data.reciept+"--------------------");
+  const cont = data.content;
+  const sender = data.sender;
+  // const reciept = data.reciept;
+  // if(reciept==="GLOBAL"){
+    console.log("creating global chat");
+    const message = await allChat.create({
+      sender_id: sender,
+      content: cont,
     });
+  // }
+  // Create the chat message in the database
+  // else{
     
-    socket.on('chat message', (username, content) => {
-      writeAllChat(io, username, content);
-      console.log("message sent: " + content + " from: " + username);
-    });
+  //   console.log("creating DM chat");
+  //   const message = await chatMessage.create({
+  //     sender_id:sender,
+  //     recipient_id:reciept,
+  //     content:cont
+  //   });s
+  // }
+  // Emit the chat message event to the Socket.IO server
+  io.emit('display all chat', sender );
 
-    socket.on('display message', (username) => {
-      getAllChat(io, username);
-    });
+  // return {
+  //   success: true,
+  //   data: message,
+  // };
+});
 
-    socket.on("disconnect", () => {
-      console.log("A user disconnected");
-      connectedUsers--;
 
-      // Remove the disconnected socket from the object
-      // To do this, we need to find the associated username first.
-      const disconnectedUser = Object.keys(userSockets).find((username) => userSockets[username] === socket);
-      if (disconnectedUser) {
-        delete userSockets[disconnectedUser];
-        console.log(`${disconnectedUser} has disconnected`);
-      }
-    });
+
+
+exports.getOnlineUsers = asyncHandler(async(req,res,next)=>{
+  //write something here to use loggedUsers
+});
+
+
+//odoohondoo ashiglahgui
+exports.getChats = asyncHandler(async (io,sender,reciept) => {
+  console.log("displaying dm");
+  const chatHistory = await chatMessage.findAll({
+    where: {
+      [Op.or]: [
+        { sender_id: sender, recipient_id: reciept },
+        { sender_id: reciept, recipient_id: sender },
+      ],
+    },
+    order: [["sentdate", "DESC"]],
   });
 
-  server.listen(process.env.SOCKET_PORT, () => {
-    console.log(`Socket.IO server listening on port ${process.env.SOCKET_PORT}`);
+  if (!chatHistory) {
+    return res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: chatHistory,
   });
+});
 
-  // Listen for SIGINT (Ctrl+C) and SIGUSR2 (used by Nodemon) signals and disconnect all sockets
-  process.on('SIGINT', disconnectSockets);
-  process.on('SIGUSR2', disconnectSockets);
-}
+//for save chat 
+exports.writedm = asyncHandler(async(io,data)=>{
+  const cont = data.content;
+  const sender = data.sender;
+  const reciept = data.reciept;
+  const recieptent = await users.findOne({
+    where:{
+      username:reciept
+    }
+  });
+  const chat = await chatMessage.create({
+      sender_id:me,
+      recipient_id:recieptent.id,
+      content:cont,
+  });
+  if(chat) console.log("created chat backup");
+  io.emit('display dm', sender, reciept);
 
-// ... (existing code)
-
-module.exports.handleLogin = handleLogin;
+});

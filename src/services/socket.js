@@ -2,7 +2,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const express = require("express");
 const cors = require('cors');
-const { writeAllChat, getAllChat } = require("../controllers/socket.Controller");
+const { writeAllChat, getAllChat, getChats,writedm } = require("../controllers/socket.Controller");
 
 const app = express();
 
@@ -33,17 +33,26 @@ async function initialize() {
       userSockets[username] = socket;
     });
     
-    socket.on('writeAllChat', (username, content) => {
-      writeAllChat(io, username, content);
-      console.log("message sent: " + content + " from: " + username);
+    socket.on('all chat', (data) => {
+      writeAllChat(io, data);
+      console.log("message sent: " + data.reciept + " from: " + data.username);
     });
 
-    socket.on('display message', (username) => {
-      getAllChat(io, username);
+    socket.on('dm', (data) => {
+      writedm(io, data);
+      console.log("message sent: " + data.reciept + " from: " + data.username);
     });
 
-    socket.on("disconnect", () => {
-      console.log("A user disconnected");
+    socket.on('display all chat', (userid) => {
+      getAllChat(io, userid);
+    });
+
+    socket.on('display dm', (sender, reciept) => {
+      getChats(io, sender,reciept);
+    });
+
+    socket.on("disconnect", (username) => {
+      console.log(`${username}'s disconnected`);
       connectedUsers--;
 
       // Remove the disconnected socket from the object
