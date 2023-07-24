@@ -3,6 +3,7 @@ const socketIO = require("socket.io");
 const express = require("express");
 const cors = require('cors');
 const { writeAllChat, getAllChat, getChats,writedm } = require("../controllers/socket.Controller");
+const { connect } = require("http2");
 
 const app = express();
 
@@ -22,19 +23,19 @@ async function initialize() {
   console.log("Connecting to chatting server");
 
   io.on("connection", (socket) => {
-    console.log("A user connected");
-    connectedUsers++;
+    console.log("chatting server is online...");
     // console.log(connectedUsers);
     // Listen for the login event to receive the username from the client
     socket.on("Login", (username) => {
       console.log(`${username} has connected`);
-      // Store the socket with the username in the object
+      // Store the ssocket with the username in the object
       connectedUsers++;
       userSockets[username] = socket;
     });
     
     socket.on('all chat', (data) => {
       writeAllChat(io, data);
+      console.log(connectedUsers);
       // console.log("message sent: " + data.reciept + " from: " + data.username);
     });
 
@@ -54,7 +55,6 @@ async function initialize() {
     socket.on("close", username => {
       console.log(`${username}'s disconnected`);
       connectedUsers--;
-
       // Remove the disconnected socket from the object
       // To do this, we need to find the associated username first.
     });

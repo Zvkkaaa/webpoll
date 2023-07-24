@@ -8,6 +8,14 @@ exports.getAllChat = asyncHandler(async () => {
   const publicChat = await allChat.findAll({
     order: [["id", "DESC"]],
   });
+  for(let i in publicChat){
+    const user = await users.findOne({
+      where:{
+        id:publicChat[i].sender_id
+      }
+    });
+    publicChat[i].username = user.username;
+  }
   res.status(200).json({
     success: true,
     data: publicChat,
@@ -68,6 +76,20 @@ exports.getChats = asyncHandler(async (io,sender,reciept) => {
     },
     order: [["sentdate", "DESC"]],
   });
+  for(let i in chatHistory){
+    const sender = await users.findOne({
+      where:{
+        id:chatHistory[i].sender_id
+      }
+    });
+    const receiver = await users.findOne({
+      where:{
+        id:chatHistory[i].recipient_id
+      }
+    });
+    chatHistory[i].sender = sender.username;
+    chatHistory[i].receiver = receiver.username;
+  }
 
   if (!chatHistory) {
     return res.status(404).json({
