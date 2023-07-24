@@ -35,12 +35,12 @@ async function initialize() {
     
     socket.on('all chat', (data) => {
       writeAllChat(io, data);
-      console.log("message sent: " + data.reciept + " from: " + data.username);
+      // console.log("message sent: " + data.reciept + " from: " + data.username);
     });
 
     socket.on('dm', (data) => {
       writedm(io, data);
-      console.log("message sent: " + data.reciept + " from: " + data.username);
+      // console.log("message sent: " + data.reciept + " from: " + data.username);
     });
 
     socket.on('display all chat', (userid) => {
@@ -51,17 +51,12 @@ async function initialize() {
       getChats(io, sender,reciept);
     });
 
-    socket.on("disconnect", (username) => {
+    socket.on("close", username => {
       console.log(`${username}'s disconnected`);
       connectedUsers--;
 
       // Remove the disconnected socket from the object
       // To do this, we need to find the associated username first.
-      const disconnectedUser = Object.keys(userSockets).find((username) => userSockets[username] === socket);
-      if (disconnectedUser) {
-        delete userSockets[disconnectedUser];
-        console.log(`${disconnectedUser} has disconnected`);
-      }
     });
   });
 

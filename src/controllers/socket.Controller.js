@@ -87,13 +87,14 @@ exports.writedm = asyncHandler(async(io,data)=>{
   const cont = data.content;
   const sender = data.sender;
   const reciept = data.reciept;
+  // console.log(sender, reciept, cont);
   const recieptent = await users.findOne({
     where:{
       username:reciept
     }
   });
   const chat = await chatMessage.create({
-      sender_id:me,
+      sender_id:sender,
       recipient_id:recieptent.id,
       content:cont,
   });
