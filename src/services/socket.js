@@ -2,7 +2,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const express = require("express");
 const cors = require('cors');
-const { writeAllChat, getAllChat, getChats,writedm } = require("../controllers/socket.Controller");
+const { writeAllChat, getAllChat, getChat,getChats,writedm } = require("../controllers/socket.Controller");
 const { connect } = require("http2");
 
 const app = express();
@@ -43,7 +43,9 @@ async function initialize() {
       writedm(io, data);
       // console.log("message sent: " + data.reciept + " from: " + data.username);
     });
-
+    socket.on('disco',(sender,reciept)=>{
+      getChat(io,sender,reciept);
+    });
     socket.on('display all chat', (userid) => {
       getAllChat(io, userid);
     });

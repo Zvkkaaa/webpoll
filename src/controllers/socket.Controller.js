@@ -3,16 +3,16 @@ const { Op } = require("sequelize");
 const allChat = require("../models/chats");
 const chatMessage = require("../models/chatMessage");
 const users = require("../models/users");
-exports.getAllChat = asyncHandler(async () => {
+exports.getAllChat = asyncHandler(async (req, res) => { // Add the req and res parameters
   console.log("displaying all chat");
   const publicChat = await allChat.findAll({
     order: [["id", "DESC"]],
   });
-  for(let i in publicChat){
+  for (let i in publicChat) {
     const user = await users.findOne({
-      where:{
-        id:publicChat[i].sender_id
-      }
+      where: {
+        id: publicChat[i].sender_id,
+      },
     });
     publicChat[i].username = user.username;
   }
@@ -64,6 +64,31 @@ exports.getOnlineUsers = asyncHandler(async(req,res,next)=>{
 });
 
 
+exports.getChat = asyncHandler(async (sender, reciept) => {
+  console.log("displaying last dm");
+  // const sender = sender;
+  // const reciept = reciept;
+  console.log("-----------------------"+sender,reciept);
+  const chatHistory = await chatMessage.findOne({
+    where: {
+      [Op.or]: [
+        { sender_id: sender, recipient_id: reciept },
+        { sender_id: reciept, recipient_id: sender },
+      ],
+    }
+  });
+  if (!chatHistory) {
+    return res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: chatHistory,
+  });
+});
 
 exports.getChats = asyncHandler(async (req,res,next) => {
   console.log("displaying dm");
@@ -79,16 +104,6 @@ exports.getChats = asyncHandler(async (req,res,next) => {
     },
     order: [["id", "DESC"]],
   });
-  const receiver = await users.findOne({
-    where:{
-      id:reciept
-    }
-  });
-  for(let i in chatHistory){
-    chatHistory[i].sender = req.username;
-    chatHistory[i].receiver = receiver.username;
-  }
-
   if (!chatHistory) {
     return res.status(404).json({
       success: false,
@@ -107,7 +122,7 @@ exports.writedm = asyncHandler(async(io,data)=>{
   const cont = data.content;
   const sender = data.sender;
   const reciept = data.reciept;
-  // console.log(sender, reciept, cont);
+  console.log(sender, reciept, cont);
   const recieptent = await users.findOne({
     where:{
       username:reciept
@@ -119,6 +134,7 @@ exports.writedm = asyncHandler(async(io,data)=>{
       content:cont,
   });
   if(chat) console.log("created chat backup");
-  io.emit('display dm', sender, reciept);
+  
+  io.emit('disco', sender, reciept);
 
 });
