@@ -407,6 +407,7 @@ exports.getLoggedUser = asyncHandler(async (req, res, next) => {
   for (let i in users) {
     console.log("Creating user list with offline logged user...");
     const username = users[i].username;
+    const id = users[i].id;
     const profilePic = await profile.findOne({
       where: {
         userid: users[i].id
@@ -414,6 +415,7 @@ exports.getLoggedUser = asyncHandler(async (req, res, next) => {
     });
     const online = false;
     const userList = {
+      id:id,
       username: username,
       path: `/image/displayWithUsername/${username}`, // Endpoint to serve the image file directly
       online: online,

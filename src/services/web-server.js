@@ -65,7 +65,7 @@ function initialize() {
   const poll_attendanceRoute = require('../routes/poll_attendance.Route');
   const commentsRoute = require('../routes/comments.Route');
   const uploadRoute = require('../routes/upload.Route');
-  //const socketRoute = require('../routes/socket.Route');
+  const socketRoute = require('../routes/socket.Route');
 
 
   app.use('/auth', loginRoute);
@@ -76,7 +76,7 @@ function initialize() {
   app.use('/comment', commentsRoute);
   app.use('/image',uploadRoute );
   app.use('/uploads', express.static(path.join(__dirname, '../src/upload'))); // Serve static files from the 'src/upload' folder
-  //app.use('/socket',socketRoute);
+  app.use('/socket',socketRoute);
   app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../src/upload/index.html'));
   });

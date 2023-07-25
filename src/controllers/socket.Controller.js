@@ -64,9 +64,12 @@ exports.getOnlineUsers = asyncHandler(async(req,res,next)=>{
 });
 
 
-//odoohondoo ashiglahgui
-exports.getChats = asyncHandler(async (io,sender,reciept) => {
+
+exports.getChats = asyncHandler(async (req,res,next) => {
   console.log("displaying dm");
+  const sender = req.userid;
+  const reciept = req.params.userid;
+  console.log("-----------------------"+sender,reciept);
   const chatHistory = await chatMessage.findAll({
     where: {
       [Op.or]: [
@@ -74,20 +77,15 @@ exports.getChats = asyncHandler(async (io,sender,reciept) => {
         { sender_id: reciept, recipient_id: sender },
       ],
     },
-    order: [["sentdate", "DESC"]],
+    order: [["id", "DESC"]],
+  });
+  const receiver = await users.findOne({
+    where:{
+      id:reciept
+    }
   });
   for(let i in chatHistory){
-    const sender = await users.findOne({
-      where:{
-        id:chatHistory[i].sender_id
-      }
-    });
-    const receiver = await users.findOne({
-      where:{
-        id:chatHistory[i].recipient_id
-      }
-    });
-    chatHistory[i].sender = sender.username;
+    chatHistory[i].sender = req.username;
     chatHistory[i].receiver = receiver.username;
   }
 
