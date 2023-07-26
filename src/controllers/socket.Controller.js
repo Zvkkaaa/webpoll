@@ -64,10 +64,10 @@ exports.getOnlineUsers = asyncHandler(async(req,res,next)=>{
 });
 
 
-exports.getChat = asyncHandler(async (sender, reciept) => {
+exports.getChat = asyncHandler(async (req, res,next) => {
   console.log("displaying last dm");
-  // const sender = sender;
-  // const reciept = reciept;
+  const sender = req.userid;
+  const reciept = req.params.userid;
   console.log("-----------------------"+sender,reciept);
   const chatHistory = await chatMessage.findOne({
     where: {
@@ -134,7 +134,6 @@ exports.writedm = asyncHandler(async(io,data)=>{
       content:cont,
   });
   if(chat) console.log("created chat backup");
-  
-  io.emit('disco', sender, reciept);
 
+  io.emit('display dm', chat);
 });
