@@ -48,7 +48,7 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
   //   });s
   // }
   // Emit the chat message event to the Socket.IO server
-  io.emit('display all chat', sender );
+  io.emit('display all chat', message );
 
   // return {
   //   success: true,
@@ -123,14 +123,10 @@ exports.writedm = asyncHandler(async(io,data)=>{
   const sender = data.sender;
   const reciept = data.reciept;
   console.log(sender, reciept, cont);
-  const recieptent = await users.findOne({
-    where:{
-      username:reciept
-    }
-  });
+  
   const chat = await chatMessage.create({
       sender_id:sender,
-      recipient_id:recieptent.id,
+      recipient_id:reciept,
       content:cont,
   });
   if(chat) console.log("created chat backup");
