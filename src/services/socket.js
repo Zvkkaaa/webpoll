@@ -17,7 +17,7 @@ const io = socketIO(server, {
 
 let connectedUsers = 0;
 let userSockets = {};
-
+const onlineUsers = [];
 async function initialize() {
   console.log("Connecting to chatting server");
 
@@ -25,11 +25,12 @@ async function initialize() {
     console.log("chatting server is online...");
     // console.log(connectedUsers);
     // Listen for the login event to receive the username from the client
-    socket.on("Login", (username) => {
-      console.log(`${username} has connected`);
+    socket.on("Login", (data) => {
+      console.log(`${data.username} has connected`);
       // Store the ssocket with the username in the object
       connectedUsers++;
-      userSockets[username] = socket;
+      onlineUsers.push(data.id);
+      socket.emit('onlineUsers',onlineUsers);
     });
     
     socket.on('all chat', (data) => {
@@ -47,16 +48,17 @@ async function initialize() {
       getAllChat(io, userid);
     });
 
-    socket.on('receive dm', (sender, reciept, content) => {
-      // return data;
-    });
-
-    socket.on("close", username => {
-      console.log(`${username}'s disconnected`);
+    socket.on("close", data => {
+      console.log(`${data.username}'s disconnected`);
       connectedUsers--;
+      if (data.id !== -1) {
+        onlineUsers.splice(data.id, 1); // Remove 1 element at the index data.id
+      }
+      socket.emit('onlineUsers', onlineUsers);
       // Remove the disconnected socket from the object
       // To do this, we need to find the associated username first.
     });
+    
   });
 
   server.listen(process.env.SOCKET_PORT, () => {
