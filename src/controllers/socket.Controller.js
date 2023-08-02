@@ -36,6 +36,12 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
       sender_id: sender,
       content: cont,
     });
+    const user = await users.findOne({
+      where:{
+        id:sender
+      }
+    });
+    message.username = user.username;
   // }
   // Create the chat message in the database
   // else{
@@ -48,6 +54,7 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
   //   });s
   // }
   // Emit the chat message event to the Socket.IO server
+  console.log("==============="+message.username)
   io.emit('display all chat', message );
 
   // return {
