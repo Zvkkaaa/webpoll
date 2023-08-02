@@ -48,6 +48,7 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
   //   });s
   // }
   // Emit the chat message event to the Socket.IO server
+  
   io.emit('display all chat', message );
 
   // return {
