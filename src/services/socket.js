@@ -17,7 +17,7 @@ const io = socketIO(server, {
 
 let connectedUsers = 0;
 let userSockets = {};
-const onlineUsers = [];
+let onlineUsers = [];
 async function initialize() {
   console.log("Connecting to chatting server");
 
@@ -48,16 +48,18 @@ async function initialize() {
       getAllChat(io, userid);
     });
 
-    socket.on("close", data => {
+    socket.on("close", (data) => {
       console.log(`${data.username}'s disconnected`);
       connectedUsers--;
+    
       if (data.id !== -1) {
-        onlineUsers.splice(data.id, 1); // Remove 1 element at the index data.id
+        // Use the filter method to remove all elements equal to data.id from the onlineUsers array
+        onlineUsers = onlineUsers.filter((userId) => userId !== data.id);
       }
+    
       socket.emit('onlineUsers', onlineUsers);
-      // Remove the disconnected socket from the object
-      // To do this, we need to find the associated username first.
     });
+    
     
   });
 
