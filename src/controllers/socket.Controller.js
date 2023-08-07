@@ -23,10 +23,10 @@ exports.getAllChat = asyncHandler(async (req, res) => { // Add the req and res p
 });
 
 exports.writeAllChat = asyncHandler(async (io, data) => {
-  console.log("--------------"+data.content+"--------------------");
-  console.log(typeof io.emit === 'function');
-  console.log("--------------"+data.sender+"--------------------");
-  console.log("--------------"+data.reciept+"--------------------");
+  // console.log("--------------"+data.content+"--------------------");
+  // console.log(typeof io.emit === 'function');
+  // console.log("--------------"+data.sender+"--------------------");
+  // console.log("--------------"+data.reciept+"--------------------");
   const cont = data.content;
   const sender = data.sender;
   // const reciept = data.reciept;
@@ -41,7 +41,14 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
         id:sender
       }
     });
-    message.username = user.username;
+    const thatMessage = await allChat.findOne({
+      where:{
+        id:message.id
+      }
+    });
+
+    thatMessage.username=user.username;
+
   // }
   // Create the chat message in the database
   // else{
@@ -54,8 +61,8 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
   //   });s
   // }
   // Emit the chat message event to the Socket.IO server
-  console.log("==============="+message.username)
-  io.emit('display all chat', message );
+  // console.log("==============="+message.username)
+  io.emit('display all chat', thatMessage );
 
   // return {
   //   success: true,
