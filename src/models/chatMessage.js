@@ -31,6 +31,10 @@ ChatMessage.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    read: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    }
   },
   {
     sequelize: db,

@@ -3,6 +3,8 @@ const { Op } = require("sequelize");
 const allChat = require("../models/chats");
 const chatMessage = require("../models/chatMessage");
 const users = require("../models/users");
+const sequelize = require('../services/database');
+
 exports.getAllChat = asyncHandler(async (req, res) => { // Add the req and res parameters
   console.log("displaying all chat");
   const publicChat = await allChat.findAll({
@@ -32,23 +34,24 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
   // const reciept = data.reciept;
   // if(reciept==="GLOBAL"){
     console.log("creating global chat");
-    const message = await allChat.create({
-      sender_id: sender,
-      content: cont,
-    });
     const user = await users.findOne({
       where:{
         id:sender
       }
     });
-    const thatMessage = await allChat.findOne({
-      where:{
-        id:message.id
-      }
+    const message = await allChat.create({
+      sender_id: sender,
+      content: cont,
+      username: user.username
     });
+    
+    // const thatMessage = await allChat.findOne({
+    //   where:{
+    //     id:message.id
+    //   }
+    // });
 
-    thatMessage.username=user.username;
-
+    // thatMessage.username=user.username;
   // }
   // Create the chat message in the database
   // else{
@@ -62,7 +65,7 @@ exports.writeAllChat = asyncHandler(async (io, data) => {
   // }
   // Emit the chat message event to the Socket.IO server
   // console.log("==============="+message.username)
-  io.emit('display all chat', thatMessage );
+  io.emit('display all chat', message );
 
   // return {
   //   success: true,
@@ -146,4 +149,37 @@ exports.writedm = asyncHandler(async(io,data)=>{
   if(chat) console.log("created chat backup");
 
   io.emit('display dm', chat);
+});
+
+exports.setAllChatReadStatus = asyncHandler(async (req, res) => {
+  const senderId = req.body.senderId; // The sender whose messages should be marked as read
+  const recipientId = req.body.recipientId; // The recipient who is viewing the messages
+  console.log("Sender ID:", senderId);
+  console.log("Recipient ID:", recipientId);
+  await chatMessage.update(
+    { read: true },
+    { where: { sender_id: senderId, recipient_id: recipientId, read: false } }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: `All chat messages from sender ${senderId} to recipient ${recipientId} have been marked as read.`,
+  });
+});
+
+// getting number for notification.
+exports.getUnreadMessageCounts = asyncHandler(async (req, res) => {
+  const unreadMessageCounts = await chatMessage.findAll({
+    attributes: [
+      "sender_id",
+      [sequelize.fn("count", sequelize.col("id")), "unread_count"],
+    ],
+    where: { recipient_id: req.params.userid, read: false },
+    group: ["sender_id"],
+  });
+
+  res.status(200).json({
+    success: true,
+    data: unreadMessageCounts,
+  });
 });
