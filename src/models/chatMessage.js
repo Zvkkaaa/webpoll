@@ -30,10 +30,6 @@ ChatMessage.init(
     content: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    read: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
     }
   },
   {
